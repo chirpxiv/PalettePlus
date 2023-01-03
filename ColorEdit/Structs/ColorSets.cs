@@ -11,9 +11,11 @@ namespace ColorEdit.Structs {
 		public Vector4 HairColor;
 		public Vector4 HairShine;
 		public Vector4 HighlightsColor;
-		public Vector4 LeftEye;
-		public Vector4 RightEye;
-		public Vector4 LimbalRingColor;
+		public Vector3 LeftEye;
+		public float FacePaintWidth;
+		public Vector3 RightEye;
+		public float FacePaintOffset;
+		public Vector4 RaceFeature;
 	}
 
 	// unsure what this struct actually is, but it has the pointer we need

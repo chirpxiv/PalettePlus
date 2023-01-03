@@ -53,18 +53,18 @@ namespace ColorEdit.Interface.Windows {
 			model->ModelData->ColorData->HighlightsColor = hlCol;
 
 			var leftEye = model->ModelData->ColorData->LeftEye;
-			ImGui.ColorEdit4("LeftEye", ref leftEye, ImGuiColorEditFlags.NoInputs);
+			ImGui.ColorEdit3("LeftEye", ref leftEye, ImGuiColorEditFlags.NoInputs);
 			model->ModelData->ColorData->LeftEye = leftEye;
 
 			ImGui.SameLine();
 
 			var rightEye = model->ModelData->ColorData->RightEye;
-			ImGui.ColorEdit4("RightEye", ref rightEye, ImGuiColorEditFlags.NoInputs);
+			ImGui.ColorEdit3("RightEye", ref rightEye, ImGuiColorEditFlags.NoInputs);
 			model->ModelData->ColorData->RightEye = rightEye;
 
-			var limbal = model->ModelData->ColorData->LimbalRingColor;
+			var limbal = model->ModelData->ColorData->RaceFeature;
 			ImGui.ColorEdit4("LimbalRingColor", ref limbal, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->LimbalRingColor = limbal;
+			model->ModelData->ColorData->RaceFeature = limbal;
 		}
 
 		private void DebugText(string text) {
