@@ -4,7 +4,7 @@
     <Authors>Chirp</Authors>
     <Company>Ktisis Tools</Company>
     <Version>0.1.0</Version>
-    <Description>Custom color palattes for FFXIV characters. </Description>
+    <Description>Custom color palettes for FFXIV characters.</Description>
     <Copyright></Copyright>
     <PackageProjectUrl>https://github.com/chirpxiv/ColorEdit</PackageProjectUrl>
   </PropertyGroup>

@@ -1,7 +1,7 @@
 {
 	"Author": "Chirp",
 	"Name": "ColorEdit",
-	"Description": "Custom color palattes for FFXIV characters.",
+	"Description": "Custom color palettes for FFXIV characters.",
 	"InternalName": "ColorEdit",
 	"AssemblyVersion": "0.1.0.0",
 	"RepoUrl": "https://github.com/chirpxiv/ColorEdit",
