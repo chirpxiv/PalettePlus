@@ -2,6 +2,8 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 
+using ColorEdit.Palettes.Attributes;
+
 namespace ColorEdit.Structs {
 	public struct ColorData {
 		public Vector3 SkinTone;
@@ -23,21 +25,5 @@ namespace ColorEdit.Structs {
 	public struct ModelData {
 		[FieldOffset(0x00)] public IntPtr Unknown1;
 		[FieldOffset(0x28)] public unsafe ColorData* ColorData;
-	}
-
-	// Field attributes for UI display
-
-	[AttributeUsage(AttributeTargets.Field)]
-	public class ShowAlpha : Attribute {}
-
-	[AttributeUsage(AttributeTargets.Field)]
-	public class Slider : Attribute {
-		public float Min;
-		public float Max;
-
-		public Slider(float min, float max) { 
-			Min = min;
-			Max = max;
-		}
 	}
 }

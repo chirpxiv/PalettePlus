@@ -10,7 +10,8 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using ColorEdit.Structs;
-using Dalamud.Plugin.Ipc.Exceptions;
+using ColorEdit.Palettes;
+using ColorEdit.Palettes.Attributes;
 
 namespace ColorEdit.Interface.Windows {
 	public class MainWindow : Window {
@@ -21,11 +22,13 @@ namespace ColorEdit.Interface.Windows {
 		};
 
 		private string SearchString = "";
+
 		private GameObject? Selected = null;
+		private Palette Palette = new();
 
 		private Dictionary<string, ActorContainer> ActorNames = new();
 
-		private void SelectSelf() => Selected = Services.ClientState.LocalPlayer;
+		// Window
 
 		public MainWindow() : base(
 			"ColorEdit"
@@ -49,6 +52,15 @@ namespace ColorEdit.Interface.Windows {
 			base.OnClose();
 			ActorNames.Clear();
 		}
+
+		// Selection
+
+		private void Select(GameObject? obj) {
+			Selected = obj;
+			Palette.Clear();
+		}
+
+		private void SelectSelf() => Select(Services.ClientState.LocalPlayer);
 
 		// Tabs
 
@@ -82,12 +94,11 @@ namespace ColorEdit.Interface.Windows {
 
 			// Color editor
 			ImGui.BeginGroup();
-			if (ImGui.BeginChildFrame(2, new Vector2(-1, -1))) {
-				DrawColorOptions();
-				ImGui.EndChildFrame();
-			}
+			DrawActorEdit();
 			ImGui.EndGroup();
 		}
+
+		// Actor list
 
 		private void DrawActorList() {
 			ActorNames.Clear();
@@ -109,7 +120,7 @@ namespace ColorEdit.Interface.Windows {
 				if (exists) {
 					if (i >= GPoseStartIndex) {
 						if (ActorNames[name].GameObject == Selected)
-							Selected = actor;
+							Select(actor);
 						ActorNames[name] = cont;
 					} else {
 						var x = 2;
@@ -135,16 +146,27 @@ namespace ColorEdit.Interface.Windows {
 				if (cont.IsGPoseActor)
 					label += " (GPose)";
 
-				if (ImGui.Selectable(label, Selected == actor)) {
-					Selected = actor;
-				}
+				if (ImGui.Selectable(label, Selected == actor))
+					Select(actor);
 			}
 		}
 
-		private unsafe void DrawColorOptions() {
-			if (Selected == null) return;
+		// Actor edit
 
-			var model = Model.GetModelFor(Selected);
+		private void DrawActorEdit() {
+			var actor = Selected;
+			if (actor == null) return;
+
+			ImGui.Button("Save");
+
+			if (ImGui.BeginChildFrame(2, new Vector2(-1, -1))) {
+				DrawColorOptions(actor);
+				ImGui.EndChildFrame();
+			}
+		}
+
+		private unsafe void DrawColorOptions(GameObject actor) {
+			var model = Model.GetModelFor(actor);
 			if (model == null) return;
 
 			var data = model->GetColorData();
@@ -159,8 +181,19 @@ namespace ColorEdit.Interface.Windows {
 		private unsafe void DrawField(ColorData* ptr, FieldInfo field) {
 			object data = *ptr;
 
+			var name = field.Name;
 			var label = field.Name;
 			var val = field.GetValue(data);
+
+			var active = Palette.TryGetValue(name, out var _);
+			if (ImGui.Checkbox($"##{name}", ref active)) {
+				if (active)
+					Palette.Add(name, val!);
+				else
+					Palette.Remove(name);
+			}
+
+			ImGui.SameLine();
 
 			object? newVal = null;
 			if (val is Vector4 vec4) {
@@ -184,9 +217,10 @@ namespace ColorEdit.Interface.Windows {
 
 				if (ImGui.DragFloat(label, ref flt, 0.01f, min, max))
 					newVal = flt;
-			}
+			} else ImGui.Text($"Error: Unknown type for '{name}'");
 
 			if (newVal != null) {
+				Palette.SetValue(name, newVal, active);
 				field.SetValue(data, newVal);
 				*ptr = (ColorData)data;
 			}
