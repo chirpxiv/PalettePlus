@@ -10,6 +10,7 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using ColorEdit.Structs;
+using ColorEdit.Interop;
 using ColorEdit.Palettes;
 using ColorEdit.Palettes.Attributes;
 
@@ -17,9 +18,7 @@ namespace ColorEdit.Interface.Windows {
 	public class MainWindow : Window {
 		private const int GPoseStartIndex = 201;
 
-		private static Dictionary<string, string> PropertyLabels = new() {
-
-		};
+		private static Dictionary<string, string> PropertyLabels = new() {};
 
 		private string SearchString = "";
 
@@ -157,7 +156,12 @@ namespace ColorEdit.Interface.Windows {
 			var actor = Selected;
 			if (actor == null) return;
 
-			ImGui.Button("Save");
+			ImGui.Button("Save"); // TODO Implement
+			ImGui.SameLine();
+			if (ImGui.Button("Reset")) {
+				Palette.Clear();
+				unsafe { UpdateSelected(); }
+			}
 
 			if (ImGui.BeginChildFrame(2, new Vector2(-1, -1))) {
 				DrawColorOptions(actor);
@@ -187,10 +191,18 @@ namespace ColorEdit.Interface.Windows {
 
 			var active = Palette.TryGetValue(name, out var _);
 			if (ImGui.Checkbox($"##{name}", ref active)) {
-				if (active)
+				if (active) {
 					Palette.Add(name, val!);
-				else
+				} else {
 					Palette.Remove(name);
+
+					ptr = UpdateSelected();
+					if (ptr == null) return;
+
+					data = *ptr;
+					Palette.Apply(ref data);
+					*ptr = (ColorData)data;
+				}
 			}
 
 			ImGui.SameLine();
@@ -225,6 +237,19 @@ namespace ColorEdit.Interface.Windows {
 				*ptr = (ColorData)data;
 			}
 		}
+
+		private unsafe ColorData* UpdateSelected() {
+			if (Selected == null) return null;
+
+			var model = Model.GetModelFor(Selected);
+			if (model == null) return null;
+
+			Hooks.UpdateColorsHook.Original(model);
+
+			return model->GetColorData();
+		}
+
+		// ActorContainer
 
 		private class ActorContainer {
 			internal int Index;

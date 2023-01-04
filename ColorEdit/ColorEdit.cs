@@ -1,7 +1,6 @@
 ﻿using Dalamud.Plugin;
 
-using Dalamud.Game.ClientState.Objects.Types;
-
+using ColorEdit.Interop;
 using ColorEdit.Interface;
 using ColorEdit.Interface.Windows;
 
@@ -13,6 +12,8 @@ namespace ColorEdit {
 		public ColorEdit(DalamudPluginInterface dalamud) {
 			Services.Init(dalamud);
 
+			Hooks.Init();
+
 			Services.Interface.UiBuilder.DisableGposeUiHide = true;
 			Services.Interface.UiBuilder.Draw += PluginGui.Windows.Draw;
 
@@ -20,6 +21,8 @@ namespace ColorEdit {
 		}
 
 		public void Dispose() {
+			Hooks.Dispose();
+
 			Services.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;
 		}
 	}
