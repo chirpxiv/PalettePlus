@@ -22,8 +22,5 @@ namespace ColorEdit {
 		public void Dispose() {
 			Services.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;
 		}
-
-		internal unsafe static GameObject? GetPlayer()
-			=> Services.ClientState.LocalPlayer;
 	}
 }

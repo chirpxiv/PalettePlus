@@ -1,76 +1,207 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
+using System.Reflection;
+using System.Collections.Generic;
 
 using ImGuiNET;
 
-using Dalamud.Interface.Components;
 using Dalamud.Interface.Windowing;
+using Dalamud.Game.ClientState.Objects.Types;
 
 using ColorEdit.Structs;
+using Dalamud.Plugin.Ipc.Exceptions;
 
 namespace ColorEdit.Interface.Windows {
 	public class MainWindow : Window {
+		private const int GPoseStartIndex = 201;
+
+		private static Dictionary<string, string> PropertyLabels = new() {
+
+		};
+
+		private string SearchString = "";
+		private GameObject? Selected = null;
+
+		private Dictionary<string, ActorContainer> ActorNames = new();
+
+		private void SelectSelf() => Selected = Services.ClientState.LocalPlayer;
+
 		public MainWindow() : base(
 			"ColorEdit"
 		) {
+			SelectSelf();
 			RespectCloseHotkey = false;
+			SizeConstraints = new WindowSizeConstraints {
+				MinimumSize = new Vector2(400, 200),
+				MaximumSize = ImGui.GetIO().DisplaySize
+			};
 		}
 
-		public unsafe override void Draw() {
-			var player = ColorEdit.GetPlayer();
-			if (player == null) return;
+		public override void Draw() {
+			if (ImGui.BeginTabBar("ColorEdit Tabs")) {
+				DrawTab("Edit Players", EditPlayersTab);
+				ImGui.EndTabBar();
+			}
+		}
 
-			var model = Model.GetModelFor( Services.ObjectTable.CreateObjectReference((IntPtr)Services.Targets->GPoseTarget) ?? player );
-			if (model == null) return;
+		public override void OnClose() {
+			base.OnClose();
+			ActorNames.Clear();
+		}
 
-			DebugText(string.Format(
-				"ColorData* {0:X}",
-				(IntPtr)model->ModelData
-			));
-			DebugText(string.Format(
-				"Data {0:X}",
-				(IntPtr)model->ModelData->ColorData
-			));
+		// Tabs
 
-			var col = model->ModelData->ColorData->SkinTone;
-			ImGui.ColorEdit3("SkinTone", ref col, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->SkinTone = col;
+		private void DrawTab(string label, Action callback) {
+			if (ImGui.BeginTabItem(label)) {
+				callback.Invoke();
+				ImGui.EndTabItem();
+			}
+		}
 
-			var lipCol = model->ModelData->ColorData->LipColor;
-			ImGui.ColorEdit4("LipColor", ref lipCol, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->LipColor = lipCol;
+		private void EditPlayersTab() {
+			var size = ImGui.GetWindowSize();
 
-			var hairCol = model->ModelData->ColorData->HairColor;
-			ImGui.ColorEdit4("HairColor", ref hairCol, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->HairColor = hairCol;
+			// Actor list
+			ImGui.BeginGroup();
 
-			var hairShine = model->ModelData->ColorData->HairShine;
-			ImGui.ColorEdit4("HairShine", ref hairShine, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->HairShine = hairShine;
+			var leftWidth = Math.Min(size.X * 1 / 3, 400);
 
-			var hlCol = model->ModelData->ColorData->HighlightsColor;
-			ImGui.ColorEdit4("HighlightsColor", ref hlCol, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->HighlightsColor = hlCol;
+			ImGui.SetNextItemWidth(leftWidth);
+			if (ImGui.InputTextWithHint("##ActorSearch", "Search...", ref SearchString, 64)) {
+				// TODO Implement
+			}
 
-			var leftEye = model->ModelData->ColorData->LeftEye;
-			ImGui.ColorEdit3("LeftEye", ref leftEye, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->LeftEye = leftEye;
+			if (ImGui.BeginChildFrame(1, new Vector2(leftWidth, -1))) {
+				DrawActorList();
+				ImGui.EndChildFrame();
+			}
+			ImGui.EndGroup();
 
 			ImGui.SameLine();
 
-			var rightEye = model->ModelData->ColorData->RightEye;
-			ImGui.ColorEdit3("RightEye", ref rightEye, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->RightEye = rightEye;
-
-			var limbal = model->ModelData->ColorData->RaceFeature;
-			ImGui.ColorEdit4("LimbalRingColor", ref limbal, ImGuiColorEditFlags.NoInputs);
-			model->ModelData->ColorData->RaceFeature = limbal;
+			// Color editor
+			ImGui.BeginGroup();
+			if (ImGui.BeginChildFrame(2, new Vector2(-1, -1))) {
+				DrawColorOptions();
+				ImGui.EndChildFrame();
+			}
+			ImGui.EndGroup();
 		}
 
-		private void DebugText(string text) {
-			ImGui.Text(text);
-			if (ImGui.IsItemClicked())
-				ImGui.SetClipboardText(text);
+		private void DrawActorList() {
+			ActorNames.Clear();
+
+			bool isSelectionValid = false;
+			for (var i = 0; i < GPoseStartIndex + 200; i++) {
+				var actor = Services.ObjectTable[i];
+				if (actor == null) continue;
+
+				var name = actor.Name.ToString();
+				if (name.Length == 0) continue;
+
+				if (Selected == actor)
+					isSelectionValid = true;
+
+				var cont = new ActorContainer(i, actor);
+
+				var exists = ActorNames.TryGetValue(name, out var _);
+				if (exists) {
+					if (i >= GPoseStartIndex) {
+						if (ActorNames[name].GameObject == Selected)
+							Selected = actor;
+						ActorNames[name] = cont;
+					} else {
+						var x = 2;
+						while (exists) {
+							name = $"{actor.Name} #{x}";
+							exists = ActorNames.TryGetValue(name, out var _);
+							x++;
+						}
+						ActorNames.Add(name, cont);
+					}
+				} else {
+					ActorNames.Add(name, cont);
+				}
+			}
+
+			if (!isSelectionValid)
+				SelectSelf();
+
+			foreach (var (name, cont) in ActorNames) {
+				var actor = cont.GameObject;
+
+				var label = name;
+				if (cont.IsGPoseActor)
+					label += " (GPose)";
+
+				if (ImGui.Selectable(label, Selected == actor)) {
+					Selected = actor;
+				}
+			}
+		}
+
+		private unsafe void DrawColorOptions() {
+			if (Selected == null) return;
+
+			var model = Model.GetModelFor(Selected);
+			if (model == null) return;
+
+			var data = model->GetColorData();
+			if (data == null) return;
+
+			var fields = typeof(ColorData).GetFields().ToList();
+			fields.Sort((a, b) => b.FieldType == typeof(float) ? -1 : 0);
+			foreach (var field in fields)
+				DrawField(data, field);
+		}
+
+		private unsafe void DrawField(ColorData* ptr, FieldInfo field) {
+			object data = *ptr;
+
+			var label = field.Name;
+			var val = field.GetValue(data);
+
+			object? newVal = null;
+			if (val is Vector4 vec4) {
+				var alpha = field.GetCustomAttributes(true).Any(attr => attr is ShowAlpha);
+				if (alpha) {
+					if (ImGui.ColorEdit4(label, ref vec4))
+						newVal = vec4;
+				} else {
+					var vec3 = new Vector3(vec4.X, vec4.Y, vec4.Z);
+					if (ImGui.ColorEdit3(label, ref vec3))
+						newVal = new Vector4(vec3, vec4.W);
+				}
+			} else if (val is Vector3 vec3) {
+				if (ImGui.ColorEdit3(label, ref vec3))
+					newVal = vec3;
+			} else if (val is float flt) {
+				var slider = (Slider?)field.GetCustomAttributes(true).First(attr => attr is Slider);
+
+				var min = slider != null ? slider.Min : 0;
+				var max = slider != null ? slider.Max : 1;
+
+				if (ImGui.DragFloat(label, ref flt, 0.01f, min, max))
+					newVal = flt;
+			}
+
+			if (newVal != null) {
+				field.SetValue(data, newVal);
+				*ptr = (ColorData)data;
+			}
+		}
+
+		private class ActorContainer {
+			internal int Index;
+			internal GameObject GameObject;
+
+			internal ActorContainer(int index, GameObject obj) {
+				Index = index;
+				GameObject = obj;
+			}
+
+			internal bool IsGPoseActor => Index >= GPoseStartIndex;
 		}
 	}
 }

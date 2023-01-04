@@ -12,6 +12,11 @@ namespace ColorEdit.Structs {
 
 		[FieldOffset(0x9d8)] public unsafe ModelData* ModelData;
 
+		public unsafe ColorData* GetColorData() {
+			if (ModelData == null) return null;
+			return ModelData->ColorData;
+		}
+
 		public unsafe static Model* GetModelFor(GameObject obj)
 			=> (Model*)((GameObjectStruct*)obj.Address)->DrawObject;
 	}
