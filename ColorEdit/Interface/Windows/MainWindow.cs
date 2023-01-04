@@ -79,9 +79,7 @@ namespace ColorEdit.Interface.Windows {
 			var leftWidth = Math.Min(size.X * 1 / 3, 400);
 
 			ImGui.SetNextItemWidth(leftWidth);
-			if (ImGui.InputTextWithHint("##ActorSearch", "Search...", ref SearchString, 64)) {
-				// TODO Implement
-			}
+			ImGui.InputTextWithHint("##ActorSearch", "Search...", ref SearchString, 32);
 
 			if (ImGui.BeginChildFrame(1, new Vector2(leftWidth, -1))) {
 				DrawActorList();
@@ -107,6 +105,12 @@ namespace ColorEdit.Interface.Windows {
 				var actor = Services.ObjectTable[i];
 				if (actor == null) continue;
 
+				unsafe {
+					// TODO: ClientStructs PR
+					if (Actor.GetActor(actor)->ModelId != 0) continue;
+					if (Model.GetModel(actor) == null) continue;
+				}
+
 				var name = actor.Name.ToString();
 				if (name.Length == 0) continue;
 
@@ -118,7 +122,7 @@ namespace ColorEdit.Interface.Windows {
 				var exists = ActorNames.TryGetValue(name, out var _);
 				if (exists) {
 					if (i >= GPoseStartIndex) {
-						if (ActorNames[name].GameObject == Selected)
+						if (Selected != null && Selected.Address == ActorNames[name].GameObject.Address)
 							Select(actor);
 						ActorNames[name] = cont;
 					} else {
@@ -138,6 +142,8 @@ namespace ColorEdit.Interface.Windows {
 			if (!isSelectionValid)
 				SelectSelf();
 
+			var searchString = SearchString.ToLower();
+
 			foreach (var (name, cont) in ActorNames) {
 				var actor = cont.GameObject;
 
@@ -145,7 +151,10 @@ namespace ColorEdit.Interface.Windows {
 				if (cont.IsGPoseActor)
 					label += " (GPose)";
 
-				if (ImGui.Selectable(label, Selected == actor))
+				if (searchString.Length > 0 && !label.ToLower().Contains(searchString))
+					continue;
+
+				if (ImGui.Selectable(label, Selected != null && Selected.Address == actor.Address))
 					Select(actor);
 			}
 		}
@@ -170,11 +179,18 @@ namespace ColorEdit.Interface.Windows {
 		}
 
 		private unsafe void DrawColorOptions(GameObject actor) {
-			var model = Model.GetModelFor(actor);
-			if (model == null) return;
+			
+			var model = Model.GetModel(actor);
+			if (model == null) {
+				ImGui.Text("No Model");
+				return;
+			}
 
 			var data = model->GetColorData();
-			if (data == null) return;
+			if (data == null) {
+				ImGui.Text("No ColorData");
+				return;
+			}
 
 			var fields = typeof(ColorData).GetFields().ToList();
 			fields.Sort((a, b) => b.FieldType == typeof(float) ? -1 : 0);
@@ -183,6 +199,8 @@ namespace ColorEdit.Interface.Windows {
 		}
 
 		private unsafe void DrawField(ColorData* ptr, FieldInfo field) {
+			if (ptr == null) return;
+
 			object data = *ptr;
 
 			var name = field.Name;
@@ -241,7 +259,7 @@ namespace ColorEdit.Interface.Windows {
 		private unsafe ColorData* UpdateSelected() {
 			if (Selected == null) return null;
 
-			var model = Model.GetModelFor(Selected);
+			var model = Model.GetModel(Selected);
 			if (model == null) return null;
 
 			Hooks.UpdateColorsHook.Original(model);
@@ -260,7 +278,7 @@ namespace ColorEdit.Interface.Windows {
 				GameObject = obj;
 			}
 
-			internal bool IsGPoseActor => Index >= GPoseStartIndex;
+			internal bool IsGPoseActor => Index >= GPoseStartIndex && Index <= GPoseStartIndex + 48;
 		}
 	}
 }

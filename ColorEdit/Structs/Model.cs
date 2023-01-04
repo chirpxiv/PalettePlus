@@ -17,7 +17,10 @@ namespace ColorEdit.Structs {
 			return ModelData->ColorData;
 		}
 
-		public unsafe static Model* GetModelFor(GameObject obj)
-			=> (Model*)((GameObjectStruct*)obj.Address)->DrawObject;
+		public unsafe static Model* GetModel(GameObject obj) {
+			var gameObject = (GameObjectStruct*)obj.Address;
+			if (gameObject == null) return null;
+			return (Model*)gameObject->DrawObject;
+		}
 	}
 }

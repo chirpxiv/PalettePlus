@@ -14,9 +14,9 @@ namespace ColorEdit.Structs {
 		public Vector4 HairShine;
 		public Vector4 HighlightsColor;
 		public Vector3 LeftEyeColor;
-		[Slider(-1, 1)] public float FacePaintWidth;
+		[Slider(-10, 10)] public float FacePaintWidth;
 		public Vector3 RightEyeColor;
-		[Slider(-1, 1)] public float FacePaintOffset;
+		[Slider(-10, 10)] public float FacePaintOffset;
 		public Vector4 RaceFeatureColor;
 	}
 
