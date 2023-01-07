@@ -14,6 +14,12 @@ namespace ColorEdit.Palettes {
 		public void SetValue(string key, object value)
 			=> SetValue(key, value, ContainsKey(key));
 
+		public void Copy(ColorData data) {
+			var fields = typeof(ColorData).GetFields();
+			foreach (var field in fields)
+				SetValue(field.Name, field.GetValue(data)!, false);
+		}
+
 		public void Apply(ref object data) {
 			if (data is ColorData == false) return;
 			foreach (var (name, value) in this) {
