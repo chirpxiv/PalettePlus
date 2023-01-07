@@ -7,8 +7,9 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using ColorEdit.Structs;
-using ColorEdit.Palettes;
 using ColorEdit.Extensions;
+using ColorEdit.Palettes;
+using ColorEdit.Palettes.Attributes;
 using ColorEdit.Interface.Components;
 
 namespace ColorEdit.Interface.Windows {
@@ -69,7 +70,7 @@ namespace ColorEdit.Interface.Windows {
 
 				object data = *color;
 				Palette.Apply(ref data);
-				*color = (ColorData)data;
+				*color = (DrawParams)data;
 			}
 		}
 
@@ -115,6 +116,12 @@ namespace ColorEdit.Interface.Windows {
 				unsafe { actor.UpdateColors(); }
 			}
 			ImGui.EndDisabled();
+
+			ImGui.SameLine();
+
+			var eyeLink = (ColorEdit.Config.Linked & LinkType.Eyes) != LinkType.None;
+			if (ImGui.Checkbox("Link eye colors", ref eyeLink))
+				ColorEdit.Config.Linked ^= LinkType.Eyes;
 
 			PaletteEditor.Draw(actor, ref Palette);
 		}

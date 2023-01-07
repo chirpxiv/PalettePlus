@@ -5,6 +5,7 @@ using Dalamud.Configuration;
 using Dalamud.Logging;
 
 using ColorEdit.Palettes;
+using ColorEdit.Palettes.Attributes;
 using ColorEdit.Interface;
 using ColorEdit.Interface.Windows;
 
@@ -20,15 +21,11 @@ namespace ColorEdit {
 
 		public Dictionary<string, Palette> SavedPalettes { get; set; } = new();
 
-		public static void LoadConfig() {
-			try {
-				ColorEdit.Config = Services.Interface.GetPluginConfig() as Configuration ?? new();
-			} catch(Exception e) {
-				PluginLog.Error("Failed to load ColorEdit config. Settings have been reset.", e);
-				ColorEdit.Config = new();
-			}
-			ColorEdit.Config.Init();
-		}
+		// Links
+
+		public LinkType Linked { get; set; } = LinkType.Eyes;
+
+		// Methods
 
 		public void Init() {
 			if (Version != _ConfigVer)
@@ -46,6 +43,8 @@ namespace ColorEdit {
 			}
 		}
 
+		public void Save() => Services.Interface.SavePluginConfig(this);
+
 		private void Upgrade() {
 			PluginLog.Warning(string.Format(
 				"Upgrading config version from {0} to {1}.\nThis is nothing to worry about, but some settings may change or reset!",
@@ -53,6 +52,16 @@ namespace ColorEdit {
 			));
 
 			Version = _ConfigVer;
+		}
+
+		public static void LoadConfig() {
+			try {
+				ColorEdit.Config = Services.Interface.GetPluginConfig() as Configuration ?? new();
+			} catch (Exception e) {
+				PluginLog.Error("Failed to load ColorEdit config. Settings have been reset.", e);
+				ColorEdit.Config = new();
+			}
+			ColorEdit.Config.Init();
 		}
 	}
 }

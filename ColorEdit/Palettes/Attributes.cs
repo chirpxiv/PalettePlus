@@ -16,4 +16,19 @@ namespace ColorEdit.Palettes.Attributes {
 			Max = max;
 		}
 	}
+
+	[AttributeUsage(AttributeTargets.Field)]
+	public class Linked : Attribute {
+		public LinkType LinkType;
+		public string CopyField;
+
+		public Linked(LinkType link, string field) {
+			LinkType = link;
+			CopyField = field;
+		}
+	}
+
+	// Enums
+
+	[Flags] public enum LinkType { None, Eyes }
 }

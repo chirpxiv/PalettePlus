@@ -5,7 +5,6 @@ using Dalamud.Game.Command;
 using ColorEdit.Interop;
 using ColorEdit.Interface;
 using ColorEdit.Interface.Windows;
-using Dalamud.Logging;
 
 namespace ColorEdit {
 	public sealed class ColorEdit : IDalamudPlugin {
@@ -36,7 +35,7 @@ namespace ColorEdit {
 
 			Services.CommandManager.RemoveHandler(CommandName);
 
-			Services.Interface.SavePluginConfig(Config);
+			Config.Save();
 		}
 
 		private void OnCommand(string _, string arguments)

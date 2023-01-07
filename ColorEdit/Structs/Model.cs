@@ -12,7 +12,7 @@ namespace ColorEdit.Structs {
 
 		[FieldOffset(0x9d8)] public unsafe ModelData* ModelData;
 
-		public unsafe ColorData* GetColorData() {
+		public unsafe DrawParams* GetColorData() {
 			if (ModelData == null) return null;
 			return ModelData->ColorData;
 		}

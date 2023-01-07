@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 using ColorEdit.Palettes.Attributes;
 
 namespace ColorEdit.Structs {
-	public struct ColorData {
+	public struct DrawParams {
 		public Vector3 SkinTone;
 		[Slider(-10, 10)] public float MuscleTone;
 		public Vector4 SkinGloss;
@@ -15,7 +15,7 @@ namespace ColorEdit.Structs {
 		public Vector4 HighlightsColor;
 		public Vector3 LeftEyeColor;
 		[Slider(-10, 10)] public float FacePaintWidth;
-		public Vector3 RightEyeColor;
+		[Linked(LinkType.Eyes, "LeftEyeColor")] public Vector3 RightEyeColor;
 		[Slider(-10, 10)] public float FacePaintOffset;
 		public Vector4 RaceFeatureColor;
 	}
@@ -24,6 +24,6 @@ namespace ColorEdit.Structs {
 	[StructLayout(LayoutKind.Explicit)]
 	public struct ModelData {
 		[FieldOffset(0x00)] public IntPtr Unknown1;
-		[FieldOffset(0x28)] public unsafe ColorData* ColorData;
+		[FieldOffset(0x28)] public unsafe DrawParams* ColorData;
 	}
 }
