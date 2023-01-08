@@ -14,16 +14,16 @@ namespace ColorEdit.Palettes {
 		public void SetValue(string key, object value)
 			=> SetValue(key, value, ContainsKey(key));
 
-		public void Copy(DrawParams data) {
-			var fields = typeof(DrawParams).GetFields();
+		public void Copy(ModelParams data) {
+			var fields = typeof(ModelParams).GetFields();
 			foreach (var field in fields)
 				SetValue(field.Name, field.GetValue(data)!, false);
 		}
 
 		public void Apply(ref object data) {
-			if (data is DrawParams == false) return;
+			if (data is ModelParams == false) return;
 			foreach (var (name, value) in this) {
-				var field = typeof(DrawParams).GetField(name)!;
+				var field = typeof(ModelParams).GetField(name)!;
 				field.SetValue(data, value);
 			}
 		}

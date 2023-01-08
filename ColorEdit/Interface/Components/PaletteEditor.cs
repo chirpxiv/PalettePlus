@@ -27,14 +27,14 @@ namespace ColorEdit.Interface.Components {
 			var data = model->GetColorData();
 			if (data == null) return;
 
-			var fields = typeof(DrawParams).GetFields().ToList();
+			var fields = typeof(ModelParams).GetFields().ToList();
 			fields.Sort((a, b) => b.FieldType == typeof(float) ? -1 : 0);
 			foreach (var field in fields)
 				if (!DrawField(actor, data, field, ref palette))
 					break;
 		}
 
-		private static unsafe bool DrawField(GameObject actor, DrawParams* ptr, FieldInfo field, ref Palette palette) {
+		private static unsafe bool DrawField(GameObject actor, ModelParams* ptr, FieldInfo field, ref Palette palette) {
 			if (ptr == null) return false;
 
 			bool draw = true;
@@ -106,14 +106,14 @@ namespace ColorEdit.Interface.Components {
 
 					data = *ptr;
 					palette.Apply(ref data);
-					*ptr = (DrawParams)data;
+					*ptr = (ModelParams)data;
 				}
 			}
 
 			if (newVal != null) {
 				palette.SetValue(name, newVal, active);
 				field.SetValue(data, newVal);
-				*ptr = (DrawParams)data;
+				*ptr = (ModelParams)data;
 			}
 
 			return true;

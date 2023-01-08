@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 
 using Dalamud.Hooking;
 
@@ -6,17 +7,27 @@ using ColorEdit.Structs;
 
 namespace ColorEdit.Interop {
 	internal static class Hooks {
+		private const string QWordSig = "4C 8B C0 48 8B 0D ?? ?? ?? ??";
 		private const string UpdateColorsSig = "E8 ?? ?? ?? ?? B2 FF 48 8B CB";
+		private const string GenerateColorsSig = "48 8B C4 4C 89 40 18 48 89 50 10 55 53";
+
+		internal static IntPtr UnknownQWord;
 
 		internal unsafe delegate IntPtr UpdateColorsDelegate(Model* a1);
 		internal static Hook<UpdateColorsDelegate> UpdateColorsHook = null!;
-		//internal static UpdateColorsDelegate UpdateColors = null!;
+
+		internal unsafe delegate IntPtr GenerateColorsDelegate(IntPtr a1, ModelShader* model, ModelShader* decal, byte* customize);
+		internal static GenerateColorsDelegate GenerateColors = null!;
 
 		internal unsafe static void Init() {
-			var addr = Services.SigScanner.ScanText(UpdateColorsSig);
-			//UpdateColors = Marshal.GetDelegateForFunctionPointer<UpdateColorsDelegate>(addr);
-			UpdateColorsHook = Hook<UpdateColorsDelegate>.FromAddress(addr, UpdateColorsDetour);
+			UnknownQWord = *(IntPtr*)Services.SigScanner.GetStaticAddressFromSig(QWordSig);
+
+			var updateColors = Services.SigScanner.ScanText(UpdateColorsSig);
+			UpdateColorsHook = Hook<UpdateColorsDelegate>.FromAddress(updateColors, UpdateColorsDetour);
 			UpdateColorsHook.Enable();
+
+			var generateColors = Services.SigScanner.ScanText(GenerateColorsSig);
+			GenerateColors = Marshal.GetDelegateForFunctionPointer<GenerateColorsDelegate>(generateColors);
 		}
 
 		internal static void Dispose() {

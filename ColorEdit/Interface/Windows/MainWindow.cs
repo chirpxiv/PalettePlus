@@ -35,42 +35,10 @@ namespace ColorEdit.Interface.Windows {
 
 		public override void Draw() {
 			if (ImGui.BeginTabBar("ColorEdit Tabs")) {
-				DrawTab("Edit Players", EditPlayersTab);
+				DrawTab("Edit Players", DrawPlayersTab);
+				DrawTab("Saved Palettes", DrawPalettesTab);
+				DrawTab("Persistence", () => {});
 				ImGui.EndTabBar();
-			}
-		}
-
-		// Selection
-
-		private unsafe void Select(GameObject? obj) {
-			if (obj == null)
-				obj = Services.ClientState.LocalPlayer;
-
-			Selected = obj;
-			Palette.Clear();
-
-			// Reconstruct Palette for charas previously modified.
-			// This is hacky but it works fine for now.
-
-			var model = obj != null ? Model.GetModel(obj) : null;
-			var color = model != null ? model->GetColorData() : null;
-			if (color != null) {
-				Palette.Copy(*color);
-
-				var basic = new Palette();
-				color = obj!.UpdateColors();
-				if (color == null) return;
-
-				basic.Copy(*color);
-
-				foreach (var (key, value) in Palette) {
-					if (Palette[key].Equals(basic[key]))
-						Palette.Remove(key);
-				}
-
-				object data = *color;
-				Palette.Apply(ref data);
-				*color = (DrawParams)data;
 			}
 		}
 
@@ -85,12 +53,12 @@ namespace ColorEdit.Interface.Windows {
 
 		// "Edit Players" Tab
 
-		private void EditPlayersTab() {
+		private void DrawPlayersTab() {
 			var size = ImGui.GetWindowSize();
 
 			// Actor list
 			
-			ActorList.Draw(Selected, Select);
+			ActorList.Draw(Selected, SelectActor);
 
 			ImGui.SameLine();
 
@@ -99,8 +67,6 @@ namespace ColorEdit.Interface.Windows {
 			DrawActorEdit();
 			ImGui.EndGroup();
 		}
-
-		// Actor edit
 
 		private void DrawActorEdit() {
 			var actor = Selected;
@@ -124,6 +90,37 @@ namespace ColorEdit.Interface.Windows {
 				ColorEdit.Config.Linked ^= LinkType.Eyes;
 
 			PaletteEditor.Draw(actor, ref Palette);
+		}
+
+		private unsafe void SelectActor(GameObject? obj) {
+			if (obj == null)
+				obj = Services.ClientState.LocalPlayer;
+
+			Selected = obj;
+			Palette.Clear();
+
+			// Reconstruct Palette for charas previously modified.
+			// This is hacky but it works fine for now.
+
+			var model = obj != null ? Model.GetModel(obj) : null;
+			var color = model != null ? model->GetColorData() : null;
+			if (color != null) {
+				Palette.Copy(*color);
+
+				var def = new Palette();
+				def.Copy(model->GenerateColorValues().Model);
+
+				foreach (var (key, value) in Palette) {
+					if (Palette[key].Equals(def[key]))
+						Palette.Remove(key);
+				}
+			}
+		}
+
+		// "Saved Palettes" Tab
+
+		private void DrawPalettesTab() {
+			// TODO
 		}
 	}
 }
