@@ -10,6 +10,8 @@ using ColorEdit.Structs;
 using ColorEdit.Extensions;
 using ColorEdit.Palettes;
 using ColorEdit.Palettes.Attributes;
+using System.Collections.Generic;
+using Dalamud.Logging;
 
 namespace ColorEdit.Interface.Components {
 	internal static class PaletteEditor {
@@ -26,6 +28,16 @@ namespace ColorEdit.Interface.Components {
 
 			var data = model->GetColorData();
 			if (data == null) return;
+
+			ImGui.Spacing();
+
+			var hetchro = (palette.Conditions & PaletteConditions.Heterochromia) != 0;
+			if (ImGui.Checkbox("Heterochromia", ref hetchro))
+				palette.Conditions ^= PaletteConditions.Heterochromia;
+
+			ImGui.Spacing();
+			ImGui.Separator();
+			ImGui.Spacing();
 
 			var fields = typeof(ModelParams).GetFields().ToList();
 			fields.Sort((a, b) => b.FieldType == typeof(float) ? -1 : 0);
@@ -51,17 +63,14 @@ namespace ColorEdit.Interface.Components {
 
 			object? newVal = null;
 
-			var linked = (Linked?)attributes.FirstOrDefault(attr => attr is Linked);
-			if (linked != null) {
-				var isLinked = (ColorEdit.Config.Linked & linked.LinkType) != LinkType.None;
-				if (isLinked) {
-					draw = false;
-					if (palette.TryGetValue(linked.CopyField, out var copy)) {
-						if (val != copy)
-							newVal = copy;
-					} else if (active) {
-						active = false;
-						palette.Remove(name);
+			var condition = (Conditional?)attributes.FirstOrDefault(attr => attr is Conditional);
+			if (condition != null) {
+				draw = (palette.Conditions & condition.Conditions) != 0;
+				if (!draw) {
+					if (active) active = false;
+					if (condition is ConditionalLink linked) {
+						var linkVal = typeof(ModelParams).GetField(linked.LinkedTo)!.GetValue(data);
+						if (val != linkVal) newVal = linkVal;
 					}
 				}
 			}

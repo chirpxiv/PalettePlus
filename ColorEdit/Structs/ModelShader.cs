@@ -2,6 +2,7 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 
+using ColorEdit.Palettes;
 using ColorEdit.Palettes.Attributes;
 
 namespace ColorEdit.Structs {
@@ -31,7 +32,7 @@ namespace ColorEdit.Structs {
 		public Vector4 HighlightsColor;
 		public Vector3 LeftEyeColor;
 		[Slider(-10, 10)] public float FacePaintWidth;
-		[Linked(LinkType.Eyes, "LeftEyeColor")] public Vector3 RightEyeColor;
+		[ConditionalLink(PaletteConditions.Heterochromia, "LeftEyeColor")] public Vector3 RightEyeColor;
 		[Slider(-10, 10)] public float FacePaintOffset;
 		public Vector4 RaceFeatureColor;
 

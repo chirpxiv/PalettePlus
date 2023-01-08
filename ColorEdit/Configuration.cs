@@ -21,10 +21,6 @@ namespace ColorEdit {
 
 		public Dictionary<string, Palette> SavedPalettes { get; set; } = new();
 
-		// Links
-
-		public LinkType Linked { get; set; } = LinkType.Eyes;
-
 		// Methods
 
 		public void Init() {

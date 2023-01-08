@@ -83,12 +83,6 @@ namespace ColorEdit.Interface.Windows {
 			}
 			ImGui.EndDisabled();
 
-			ImGui.SameLine();
-
-			var eyeLink = (ColorEdit.Config.Linked & LinkType.Eyes) != LinkType.None;
-			if (ImGui.Checkbox("Link eye colors", ref eyeLink))
-				ColorEdit.Config.Linked ^= LinkType.Eyes;
-
 			PaletteEditor.Draw(actor, ref Palette);
 		}
 

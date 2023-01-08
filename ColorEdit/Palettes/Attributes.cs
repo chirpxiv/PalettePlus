@@ -18,17 +18,19 @@ namespace ColorEdit.Palettes.Attributes {
 	}
 
 	[AttributeUsage(AttributeTargets.Field)]
-	public class Linked : Attribute {
-		public LinkType LinkType;
-		public string CopyField;
+	public class Conditional : Attribute {
+		public PaletteConditions Conditions;
 
-		public Linked(LinkType link, string field) {
-			LinkType = link;
-			CopyField = field;
-		}
+		public Conditional(PaletteConditions conditions)
+			=> Conditions = conditions;
 	}
 
-	// Enums
+	[AttributeUsage(AttributeTargets.Field)]
+	public class ConditionalLink : Conditional {
+		public string LinkedTo;
 
-	[Flags] public enum LinkType { None, Eyes }
+		public ConditionalLink(PaletteConditions conditions, string linkedTo) : base(conditions) {
+			LinkedTo = linkedTo;
+		}
+	}
 }
