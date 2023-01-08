@@ -7,9 +7,8 @@ using Dalamud.Interface.Windowing;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using ColorEdit.Structs;
-using ColorEdit.Extensions;
 using ColorEdit.Palettes;
-using ColorEdit.Palettes.Attributes;
+using ColorEdit.Extensions;
 using ColorEdit.Interface.Components;
 
 namespace ColorEdit.Interface.Windows {

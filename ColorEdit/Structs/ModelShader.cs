@@ -29,7 +29,7 @@ namespace ColorEdit.Structs {
 		[ShowAlpha] public Vector4 LipColor;
 		public Vector4 HairColor;
 		public Vector4 HairShine;
-		public Vector4 HighlightsColor;
+		[ConditionalLink(PaletteConditions.Highlights, "HairColor")] public Vector4 HighlightsColor;
 		public Vector3 LeftEyeColor;
 		[Slider(-10, 10)] public float FacePaintWidth;
 		[ConditionalLink(PaletteConditions.Heterochromia, "LeftEyeColor")] public Vector3 RightEyeColor;

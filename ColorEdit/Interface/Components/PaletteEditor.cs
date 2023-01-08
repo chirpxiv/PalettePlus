@@ -10,8 +10,6 @@ using ColorEdit.Structs;
 using ColorEdit.Extensions;
 using ColorEdit.Palettes;
 using ColorEdit.Palettes.Attributes;
-using System.Collections.Generic;
-using Dalamud.Logging;
 
 namespace ColorEdit.Interface.Components {
 	internal static class PaletteEditor {
@@ -32,8 +30,18 @@ namespace ColorEdit.Interface.Components {
 			ImGui.Spacing();
 
 			var hetchro = (palette.Conditions & PaletteConditions.Heterochromia) != 0;
-			if (ImGui.Checkbox("Heterochromia", ref hetchro))
+			if (ImGui.Checkbox("Heterochromia", ref hetchro)) {
+				if (hetchro) palette.Remove("RightEyeColor");
 				palette.Conditions ^= PaletteConditions.Heterochromia;
+			}
+
+			ImGui.SameLine();
+
+			var highlights = (palette.Conditions & PaletteConditions.Highlights) != 0;
+			if (ImGui.Checkbox("Highlights", ref highlights)) {
+				if (highlights) palette.Remove("HighlightsColor");
+				palette.Conditions ^= PaletteConditions.Highlights;
+			}
 
 			ImGui.Spacing();
 			ImGui.Separator();

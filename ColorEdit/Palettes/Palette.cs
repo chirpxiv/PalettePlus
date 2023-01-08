@@ -21,6 +21,8 @@ namespace ColorEdit.Palettes {
 			Conditions = PaletteConditions.None;
 			if (data.LeftEyeColor != data.RightEyeColor)
 				Conditions ^= PaletteConditions.Heterochromia;
+			if (data.HairColor != data.HighlightsColor)
+				Conditions ^= PaletteConditions.Highlights;
 
 			var fields = typeof(ModelParams).GetFields();
 			foreach (var field in fields)
@@ -39,6 +41,7 @@ namespace ColorEdit.Palettes {
 	[Flags]
 	public enum PaletteConditions {
 		None,
-		Heterochromia
+		Heterochromia,
+		Highlights
 	}
 }
