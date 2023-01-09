@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ColorEdit.Palettes.Attributes {
+namespace PalettePlus.Palettes.Attributes {
 	// Field attributes for UI display
 
 	[AttributeUsage(AttributeTargets.Field)]

@@ -3,9 +3,9 @@ using System.Runtime.InteropServices;
 
 using Dalamud.Hooking;
 
-using ColorEdit.Structs;
+using PalettePlus.Structs;
 
-namespace ColorEdit.Interop {
+namespace PalettePlus.Interop {
 	internal static class Hooks {
 		private const string QWordSig = "4C 8B C0 48 8B 0D ?? ?? ?? ??";
 		private const string UpdateColorsSig = "E8 ?? ?? ?? ?? B2 FF 48 8B CB";

@@ -1,9 +1,9 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
 
-using ColorEdit.Interop;
-using ColorEdit.Structs;
+using PalettePlus.Interop;
+using PalettePlus.Structs;
 
-namespace ColorEdit.Extensions {
+namespace PalettePlus.Extensions {
 	internal static class GameObjectExtensions {
 		internal unsafe static ModelParams* UpdateColors(this GameObject actor) {
 			var model = Model.GetModel(actor);

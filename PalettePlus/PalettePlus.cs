@@ -2,18 +2,18 @@
 
 using Dalamud.Game.Command;
 
-using ColorEdit.Interop;
-using ColorEdit.Interface;
-using ColorEdit.Interface.Windows;
+using PalettePlus.Interop;
+using PalettePlus.Interface;
+using PalettePlus.Interface.Windows;
 
-namespace ColorEdit {
-	public sealed class ColorEdit : IDalamudPlugin {
-		public string Name => "ColorEdit";
-		public string CommandName = "/coloredit";
+namespace PalettePlus {
+	public sealed class PalettePlus : IDalamudPlugin {
+		public string Name => "Palette+";
+		public string CommandName = "/palette";
 
 		public static Configuration Config { get; internal set; } = null!;
 
-		public ColorEdit(DalamudPluginInterface dalamud) {
+		public PalettePlus(DalamudPluginInterface dalamud) {
 			Services.Init(dalamud);
 
 			Configuration.LoadConfig();
@@ -24,7 +24,7 @@ namespace ColorEdit {
 			Services.Interface.UiBuilder.Draw += PluginGui.Windows.Draw;
 
 			Services.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) {
-				HelpMessage = "/coloredit - Show the ColorEdit window."
+				HelpMessage = "/palette - Show the Palette+ window."
 			});
 		}
 
@@ -42,6 +42,6 @@ namespace ColorEdit {
 			=> PluginGui.GetWindow<MainWindow>().Show();
 
 		internal static string GetVersion()
-			=> typeof(ColorEdit).Assembly.GetName().Version!.ToString(fieldCount: 3);
+			=> typeof(PalettePlus).Assembly.GetName().Version!.ToString(fieldCount: 3);
 	}
 }

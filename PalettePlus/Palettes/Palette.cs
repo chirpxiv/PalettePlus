@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using ColorEdit.Structs;
+using PalettePlus.Structs;
 
-namespace ColorEdit.Palettes {
+namespace PalettePlus.Palettes {
 	public class Palette : Dictionary<string, object> {
 		public PaletteConditions Conditions;
 

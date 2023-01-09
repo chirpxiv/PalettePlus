@@ -6,12 +6,12 @@ using ImGuiNET;
 using Dalamud.Interface.Windowing;
 using Dalamud.Game.ClientState.Objects.Types;
 
-using ColorEdit.Structs;
-using ColorEdit.Palettes;
-using ColorEdit.Extensions;
-using ColorEdit.Interface.Components;
+using PalettePlus.Structs;
+using PalettePlus.Palettes;
+using PalettePlus.Extensions;
+using PalettePlus.Interface.Components;
 
-namespace ColorEdit.Interface.Windows {
+namespace PalettePlus.Interface.Windows {
 	public class MainWindow : Window {
 		private const int GPoseStartIndex = 201;
 
@@ -23,7 +23,7 @@ namespace ColorEdit.Interface.Windows {
 		// Window
 
 		public MainWindow() : base(
-			"ColorEdit"
+			"Palette+"
 		) {
 			RespectCloseHotkey = false;
 			SizeConstraints = new WindowSizeConstraints {

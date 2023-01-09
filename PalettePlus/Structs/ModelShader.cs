@@ -2,10 +2,10 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
 
-using ColorEdit.Palettes;
-using ColorEdit.Palettes.Attributes;
+using PalettePlus.Palettes;
+using PalettePlus.Palettes.Attributes;
 
-namespace ColorEdit.Structs {
+namespace PalettePlus.Structs {
 	[StructLayout(LayoutKind.Explicit, Size = 0x70)]
 	public struct ModelShader {
 		[FieldOffset(0x00)] public IntPtr VTable;

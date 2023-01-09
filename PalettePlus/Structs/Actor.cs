@@ -3,7 +3,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using GameObjectStruct = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
-namespace ColorEdit.Structs {
+namespace PalettePlus.Structs {
 	[StructLayout(LayoutKind.Explicit)]
 	public struct Actor {
 		[FieldOffset(0)] GameObjectStruct GameObject;

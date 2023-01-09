@@ -6,9 +6,9 @@ using ImGuiNET;
 
 using Dalamud.Game.ClientState.Objects.Types;
 
-using ColorEdit.Structs;
+using PalettePlus.Structs;
 
-namespace ColorEdit.Interface.Components {
+namespace PalettePlus.Interface.Components {
 	internal class ActorList {
 		private const int GPoseStartIndex = 201;
 

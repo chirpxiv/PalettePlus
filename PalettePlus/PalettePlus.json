@@ -1,0 +1,17 @@
+{
+	"Author": "Chirp",
+	"Name": "Palette+",
+	"Description": "Custom color palettes for FFXIV characters.",
+	"InternalName": "PalettePlus",
+	"AssemblyVersion": "0.1.0.0",
+	"RepoUrl": "https://github.com/chirpxiv/PalettePlus",
+	"ApplicableVersion": "any",
+	"DalamudApiLevel": 7,
+	"Tags": [
+		"PalettePlus",
+		"color",
+		"palette",
+		"chirp"
+	],
+	"IconUrl": "https://github.com/chirpxiv/PalettePlus/raw/main/icon.png"
+}

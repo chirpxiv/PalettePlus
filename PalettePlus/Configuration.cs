@@ -4,18 +4,18 @@ using System.Collections.Generic;
 using Dalamud.Configuration;
 using Dalamud.Logging;
 
-using ColorEdit.Palettes;
-using ColorEdit.Palettes.Attributes;
-using ColorEdit.Interface;
-using ColorEdit.Interface.Windows;
+using PalettePlus.Palettes;
+using PalettePlus.Palettes.Attributes;
+using PalettePlus.Interface;
+using PalettePlus.Interface.Windows;
 
-namespace ColorEdit {
+namespace PalettePlus {
 	[Serializable]
 	public class Configuration : IPluginConfiguration {
 		public const int _ConfigVer = 0;
 
 		public int Version { get; set; } = _ConfigVer;
-		public string PluginVersion { get; set; } = ColorEdit.GetVersion();
+		public string PluginVersion { get; set; } = PalettePlus.GetVersion();
 
 		public bool IsFirstTime { get; set; } = true;
 
@@ -27,7 +27,7 @@ namespace ColorEdit {
 			if (Version != _ConfigVer)
 				Upgrade();
 
-			var curVer = ColorEdit.GetVersion();
+			var curVer = PalettePlus.GetVersion();
 			if (PluginVersion != curVer) {
 				// TODO: Changelog?
 				PluginVersion = curVer;
@@ -52,12 +52,12 @@ namespace ColorEdit {
 
 		public static void LoadConfig() {
 			try {
-				ColorEdit.Config = Services.Interface.GetPluginConfig() as Configuration ?? new();
+				PalettePlus.Config = Services.Interface.GetPluginConfig() as Configuration ?? new();
 			} catch (Exception e) {
 				PluginLog.Error("Failed to load ColorEdit config. Settings have been reset.", e);
-				ColorEdit.Config = new();
+				PalettePlus.Config = new();
 			}
-			ColorEdit.Config.Init();
+			PalettePlus.Config.Init();
 		}
 	}
 }

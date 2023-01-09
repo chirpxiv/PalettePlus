@@ -6,12 +6,12 @@ using ImGuiNET;
 
 using Dalamud.Game.ClientState.Objects.Types;
 
-using ColorEdit.Structs;
-using ColorEdit.Extensions;
-using ColorEdit.Palettes;
-using ColorEdit.Palettes.Attributes;
+using PalettePlus.Structs;
+using PalettePlus.Extensions;
+using PalettePlus.Palettes;
+using PalettePlus.Palettes.Attributes;
 
-namespace ColorEdit.Interface.Components {
+namespace PalettePlus.Interface.Components {
 	internal static class PaletteEditor {
 		public static void Draw(GameObject actor, ref Palette palette) {
 			if (ImGui.BeginChildFrame(2, new Vector2(-1, -1))) {

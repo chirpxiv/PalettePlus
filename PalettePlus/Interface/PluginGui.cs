@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using Dalamud.Interface.Windowing;
 
-namespace ColorEdit.Interface {
+namespace PalettePlus.Interface {
 	public static class PluginGui {
 		public static WindowSystem Windows = new("ColorEdit");
 
