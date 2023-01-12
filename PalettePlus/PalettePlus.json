@@ -6,7 +6,7 @@
 	"AssemblyVersion": "0.1.0.0",
 	"RepoUrl": "https://github.com/chirpxiv/PalettePlus",
 	"ApplicableVersion": "any",
-	"DalamudApiLevel": 7,
+	"DalamudApiLevel": 8,
 	"Tags": [
 		"PalettePlus",
 		"color",
