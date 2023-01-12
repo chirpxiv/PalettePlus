@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace PalettePlus.Palettes.Attributes {
 	// Field attributes for UI display
@@ -28,6 +29,10 @@ namespace PalettePlus.Palettes.Attributes {
 	[AttributeUsage(AttributeTargets.Field)]
 	public class ConditionalLink : Conditional {
 		public string LinkedTo;
+
+		public FieldInfo? LinkedField;
+
+		public bool LastResult = false;
 
 		public ConditionalLink(PaletteConditions conditions, string linkedTo) : base(conditions) {
 			LinkedTo = linkedTo;

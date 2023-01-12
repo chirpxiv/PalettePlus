@@ -16,6 +16,8 @@ namespace PalettePlus.Interface.Windows {
 		private const int GPoseStartIndex = 201;
 
 		private GameObject? Selected = null;
+
+		private Palette DefaultPalette = new();
 		private Palette Palette = new();
 
 		private ActorList ActorList = new();
@@ -67,7 +69,7 @@ namespace PalettePlus.Interface.Windows {
 			ImGui.EndGroup();
 		}
 
-		private void DrawActorEdit() {
+		private unsafe void DrawActorEdit() {
 			var actor = Selected;
 			if (actor == null) return;
 
@@ -75,14 +77,25 @@ namespace PalettePlus.Interface.Windows {
 
 			ImGui.SameLine();
 
-			ImGui.BeginDisabled(Palette.Count == 0);
+			//ImGui.BeginDisabled(Palette.Count == 0);
 			if (ImGui.Button("Reset")) {
-				Palette.Clear();
-				unsafe { actor.UpdateColors(); }
+				Palette.ShaderParams.Clear();
+				actor.UpdateColors();
 			}
-			ImGui.EndDisabled();
+			//ImGui.EndDisabled();
 
-			PaletteEditor.Draw(actor, ref Palette);
+			var model = Model.GetModel(actor);
+			if (model != null) {
+				var cont = new ParamContainer {
+					Model = *model->ModelShader->ModelParams,
+					Decal = *model->DecalShader->DecalParams
+				};
+
+				if (PaletteEditor.Draw(DefaultPalette, ref Palette, ref cont)) {
+					*model->ModelShader->ModelParams = cont.Model;
+					*model->DecalShader->DecalParams = cont.Decal;
+				}
+			}
 		}
 
 		private unsafe void SelectActor(GameObject? obj) {
@@ -90,7 +103,7 @@ namespace PalettePlus.Interface.Windows {
 				obj = Services.ClientState.LocalPlayer;
 
 			Selected = obj;
-			Palette.Clear();
+			Palette.ShaderParams.Clear();
 
 			// Reconstruct Palette for charas previously modified.
 			// This is hacky but it works fine for now.
@@ -98,14 +111,14 @@ namespace PalettePlus.Interface.Windows {
 			var model = obj != null ? Model.GetModel(obj) : null;
 			var color = model != null ? model->GetColorData() : null;
 			if (color != null) {
-				Palette.Copy(*color);
+				Palette.CopyShaderParams(*color);
 
-				var def = new Palette();
-				def.Copy(model->GenerateColorValues().Model);
+				DefaultPalette = new Palette();
+				DefaultPalette.CopyShaderParams(model->GenerateColorValues().Model);
 
-				foreach (var (key, value) in Palette) {
-					if (Palette[key].Equals(def[key]))
-						Palette.Remove(key);
+				foreach (var (key, value) in Palette.ShaderParams) {
+					if (value.Equals(DefaultPalette.ShaderParams[key]))
+						Palette.ShaderParams.Remove(key);
 				}
 			}
 		}

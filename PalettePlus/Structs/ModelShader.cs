@@ -44,6 +44,6 @@ namespace PalettePlus.Structs {
 	}
 
 	public struct DecalParams {
-		[ShowAlpha] public Vector4 Color;
+		[ShowAlpha] public Vector4 FacePaintColor;
 	}
 }

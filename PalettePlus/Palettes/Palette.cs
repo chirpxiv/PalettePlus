@@ -4,20 +4,22 @@ using System.Collections.Generic;
 using PalettePlus.Structs;
 
 namespace PalettePlus.Palettes {
-	public class Palette : Dictionary<string, object> {
+	public class Palette {
 		public PaletteConditions Conditions;
 
-		public void SetValue(string key, object value, bool exists) {
+		public Dictionary<string, object> ShaderParams = new();
+
+		public void SetShaderParam(string key, object value, bool exists) {
 			if (exists)
-				this[key] = value;
+				ShaderParams[key] = value;
 			else
-				Add(key, value);
+				ShaderParams.Add(key, value);
 		}
 
-		public void SetValue(string key, object value)
-			=> SetValue(key, value, ContainsKey(key));
+		public void SetShaderParam(string key, object value)
+			=> SetShaderParam(key, value, ShaderParams.ContainsKey(key));
 
-		public void Copy(ModelParams data) {
+		public void CopyShaderParams(ModelParams data) {
 			Conditions = PaletteConditions.None;
 			if (data.LeftEyeColor != data.RightEyeColor)
 				Conditions ^= PaletteConditions.Heterochromia;
@@ -26,12 +28,12 @@ namespace PalettePlus.Palettes {
 
 			var fields = typeof(ModelParams).GetFields();
 			foreach (var field in fields)
-				SetValue(field.Name, field.GetValue(data)!, false);
+				SetShaderParam(field.Name, field.GetValue(data)!, false);
 		}
 
-		public void Apply(ref object data) {
+		public void ApplyShaderParams(ref object data) {
 			if (data is ModelParams == false) return;
-			foreach (var (name, value) in this) {
+			foreach (var (name, value) in ShaderParams) {
 				var field = typeof(ModelParams).GetField(name);
 				if (field != null) field.SetValue(data, value);
 			}

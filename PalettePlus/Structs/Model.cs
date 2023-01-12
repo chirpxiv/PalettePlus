@@ -6,6 +6,8 @@ using Dalamud.Game.ClientState.Objects.Types;
 using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using GameObjectStruct = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
+using PalettePlus.Palettes;
+
 namespace PalettePlus.Structs {
 	[StructLayout(LayoutKind.Explicit)]
 	public struct Model {
@@ -25,7 +27,7 @@ namespace PalettePlus.Structs {
 			return (Model*)gameObject->DrawObject;
 		}
 
-		public unsafe ColorValuePair GenerateColorValues() {
+		public unsafe ParamContainer GenerateColorValues() {
 			var modelParams = new ModelParams();
 			var decalParams = new DecalParams();
 
@@ -44,15 +46,10 @@ namespace PalettePlus.Structs {
 				Interop.Hooks.GenerateColors!(Interop.Hooks.UnknownQWord, &model, &decal, custom);
 			}
 
-			return new ColorValuePair {
+			return new ParamContainer {
 				Model = modelParams,
 				Decal = decalParams
 			};
-		}
-
-		public class ColorValuePair {
-			public ModelParams Model;
-			public DecalParams Decal;
 		}
 	}
 }

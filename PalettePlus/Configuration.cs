@@ -5,7 +5,6 @@ using Dalamud.Configuration;
 using Dalamud.Logging;
 
 using PalettePlus.Palettes;
-using PalettePlus.Palettes.Attributes;
 using PalettePlus.Interface;
 using PalettePlus.Interface.Windows;
 

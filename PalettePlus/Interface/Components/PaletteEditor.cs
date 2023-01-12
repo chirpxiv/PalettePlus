@@ -1,95 +1,124 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Numerics;
 using System.Reflection;
+using System.Collections.Generic;
 
 using ImGuiNET;
 
-using Dalamud.Game.ClientState.Objects.Types;
-
-using PalettePlus.Structs;
-using PalettePlus.Extensions;
 using PalettePlus.Palettes;
 using PalettePlus.Palettes.Attributes;
 
 namespace PalettePlus.Interface.Components {
-	internal static class PaletteEditor {
-		public static void Draw(GameObject actor, ref Palette palette) {
+	public static class PaletteEditor {
+		private static Array ConditionEnums = Enum.GetValues(typeof(PaletteConditions));
+
+		private static Dictionary<Type, FieldInfo> ContainerFields = new();
+		private static List<PaletteField> PaletteFields = new();
+
+		static PaletteEditor() {
+			// build reflection cache
+
+			var paramFields = typeof(ParamContainer).GetFields();
+			foreach (var paramField in paramFields) {
+				var type = paramField.FieldType;
+				ContainerFields.Add(type, paramField);
+
+				var fields = type.GetFields();
+				foreach (var field in fields) {
+					var value = new PaletteField(field);
+
+					var link = (ConditionalLink?)value.Attributes.FirstOrDefault(attr => attr is ConditionalLink);
+					if (link != null) link.LinkedField = fields.First(f => f.Name == link.LinkedTo);
+
+					PaletteFields.Add(value);
+				}
+			}
+
+			PaletteFields.Sort((a,b) => b.FieldInfo.FieldType == typeof(float) ? -1 : 0);
+		}
+
+		public static bool Draw(Palette defaults, ref Palette palette, ref ParamContainer cont) {
+			var result = false;
 			if (ImGui.BeginChildFrame(2, new Vector2(-1, -1))) {
-				DrawColorOptions(actor, ref palette);
+				DrawToggles(ref palette);
+				result = DrawFields(defaults, ref palette, ref cont);
 				ImGui.EndChildFrame();
 			}
+			return result;
 		}
 
-		private static unsafe void DrawColorOptions(GameObject actor, ref Palette palette) {
-			var model = Model.GetModel(actor);
-			if (model == null) return;
-
-			var data = model->GetColorData();
-			if (data == null) return;
-
+		public static void DrawToggles(ref Palette palette) {
 			ImGui.Spacing();
 
-			var hetchro = (palette.Conditions & PaletteConditions.Heterochromia) != 0;
-			if (ImGui.Checkbox("Heterochromia", ref hetchro)) {
-				if (hetchro) palette.Remove("RightEyeColor");
-				palette.Conditions ^= PaletteConditions.Heterochromia;
-			}
+			foreach (var condObj in ConditionEnums) {
+				var cond = (PaletteConditions)condObj;
+				if (cond == 0) continue;
 
-			ImGui.SameLine();
+				if ((int)cond > 1) ImGui.SameLine();
 
-			var highlights = (palette.Conditions & PaletteConditions.Highlights) != 0;
-			if (ImGui.Checkbox("Highlights", ref highlights)) {
-				if (highlights) palette.Remove("HighlightsColor");
-				palette.Conditions ^= PaletteConditions.Highlights;
+				var val = (palette.Conditions & cond) != 0;
+				if (ImGui.Checkbox(cond.ToString(), ref val))
+					palette.Conditions ^= cond;
 			}
 
 			ImGui.Spacing();
-			ImGui.Separator();
-			ImGui.Spacing();
-
-			var fields = typeof(ModelParams).GetFields().ToList();
-			fields.Sort((a, b) => b.FieldType == typeof(float) ? -1 : 0);
-			foreach (var field in fields)
-				if (!DrawField(actor, data, field, ref palette))
-					break;
 		}
 
-		private static unsafe bool DrawField(GameObject actor, ModelParams* ptr, FieldInfo field, ref Palette palette) {
-			if (ptr == null) return false;
+		public static bool DrawFields(Palette defaults, ref Palette palette, ref ParamContainer cont) {
+			var result = false;
+			foreach (var field in PaletteFields)
+				result |= DrawField(defaults, ref palette, ref cont, field);
+			return result;
+		}
 
-			bool draw = true;
+		private static bool DrawField(Palette defaults, ref Palette palette, ref ParamContainer cont, PaletteField field) {
+			var contParam = ContainerFields[field.ReflectedType];
+			object contBox = cont;
 
-			object data = *ptr;
+			var param = contParam.GetValue(contBox);
+			if (param == null) return false;
 
-			var name = field.Name;
-			var label = field.Name;
-			var val = field.GetValue(data);
-			var attributes = field.GetCustomAttributes();
+			var data = field.FieldInfo.GetValue(param);
+			if (data == null) return false;
 
-			var active = palette.ContainsKey(name);
+			var key = field.FieldInfo.Name;
+
+			var draw = true;
+			var label = key; // todo
+
+			var active = palette.ShaderParams.ContainsKey(key);
 			var _active = active;
 
 			object? newVal = null;
 
-			var condition = (Conditional?)attributes.FirstOrDefault(attr => attr is Conditional);
+			var condition = (Conditional?)field.Attributes.FirstOrDefault(attr => attr is Conditional);
 			if (condition != null) {
-				draw = (palette.Conditions & condition.Conditions) != 0;
-				if (!draw) {
-					if (active) active = false;
-					if (condition is ConditionalLink linked) {
-						var linkVal = typeof(ModelParams).GetField(linked.LinkedTo)!.GetValue(data);
-						if (val != linkVal) newVal = linkVal;
+				var match = (palette.Conditions & condition.Conditions) != 0;
+				draw &= match;
+
+				if (condition is ConditionalLink linked) {
+					var linkVal = linked.LinkedField!.GetValue(param);
+					if (!match && !data.Equals(linkVal))
+						newVal = linkVal;
+
+					if (linked.LastResult != match) {
+						linked.LastResult = match;
+						if (match)
+							active = palette.ShaderParams.ContainsKey(linked.LinkedTo);
+						else
+							active = false;
 					}
 				}
 			}
 
 			if (draw) {
-				ImGui.Checkbox($"##{name}", ref active);
+				ImGui.Checkbox($"##{field.FieldInfo.Name}", ref active);
 
 				ImGui.SameLine();
 
-				if (val is Vector4 vec4) {
-					var alpha = attributes.Any(attr => attr is ShowAlpha);
+				if (data is Vector4 vec4) {
+					var alpha = field.Attributes.Any(attr => attr is ShowAlpha);
 					if (alpha) {
 						if (ImGui.ColorEdit4(label, ref vec4))
 							newVal = vec4;
@@ -98,42 +127,52 @@ namespace PalettePlus.Interface.Components {
 						if (ImGui.ColorEdit3(label, ref vec3))
 							newVal = new Vector4(vec3, vec4.W);
 					}
-				} else if (val is Vector3 vec3) {
+				} else if (data is Vector3 vec3) {
 					if (ImGui.ColorEdit3(label, ref vec3))
 						newVal = vec3;
-				} else if (val is float flt) {
-					var slider = (Slider?)attributes.First(attr => attr is Slider);
+				} else if (data is float flt) {
+					var slider = (Slider?)field.Attributes.FirstOrDefault(attr => attr is Slider);
 
 					var min = slider != null ? slider.Min : 0;
 					var max = slider != null ? slider.Max : 1;
 
 					if (ImGui.DragFloat(label, ref flt, 0.01f, min, max))
 						newVal = flt;
-				} else ImGui.Text($"Error: Unknown type for '{name}'");
+				} else {
+					ImGui.Text($"[Not Implemented] {field.FieldInfo.Name} {data}");
+				}
 			}
+
+			active |= newVal != null;
 
 			if (active != _active) {
 				if (active) {
-					palette.Add(name, val!);
+					palette.ShaderParams.Add(key, data);
 				} else {
-					palette.Remove(name);
-
-					ptr = actor.UpdateColors();
-					if (ptr == null) return false;
-
-					data = *ptr;
-					palette.Apply(ref data);
-					*ptr = (ModelParams)data;
+					palette.ShaderParams.Remove(key);
+					newVal = defaults.ShaderParams.GetValueOrDefault(field.FieldInfo.Name);
 				}
 			}
 
 			if (newVal != null) {
-				palette.SetValue(name, newVal, active);
-				field.SetValue(data, newVal);
-				*ptr = (ModelParams)data;
+				field.FieldInfo.SetValue(param, newVal);
+				contParam.SetValue(contBox, param);
+				return true;
 			}
 
-			return true;
+			return false;
+		}
+
+		private class PaletteField {
+			internal FieldInfo FieldInfo;
+			internal Type ReflectedType;
+			internal IEnumerable<Attribute> Attributes;
+
+			internal PaletteField(FieldInfo field) { 
+				FieldInfo = field;
+				ReflectedType = field.ReflectedType!;
+				Attributes = field.GetCustomAttributes();
+			}
 		}
 	}
 }
