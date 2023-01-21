@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Numerics;
+using System.Linq;
 
 using ImGuiNET;
 
@@ -10,6 +11,7 @@ using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Extensions;
 using PalettePlus.Interface.Components;
+using Dalamud.Logging;
 
 namespace PalettePlus.Interface.Windows {
 	public class MainWindow : Window {
@@ -80,6 +82,9 @@ namespace PalettePlus.Interface.Windows {
 		}
 
 		private unsafe void DrawActorEdit() {
+			if (TabSwitched)
+				SelectActor(ActorList.Selected);
+
 			var actor = ActorList.Selected;
 			if (actor == null) return;
 
@@ -143,8 +148,26 @@ namespace PalettePlus.Interface.Windows {
 
 			ImGui.BeginGroup();
 
-			if (PaletteList.Selected != null)
+			if (PaletteList.Selected != null) {
+				if (ImGui.Button("Apply to Self")) {
+					var self = Services.ObjectTable[201] ?? Services.ClientState.LocalPlayer;
+					if (self != null)
+						PaletteList.Selected.Apply(self);
+				}
+
+				ImGui.SameLine();
+
+				var tar = Services.Targets->GPoseTarget != null ? Services.Targets->GPoseTarget : Services.Targets->Target;
+
+				ImGui.BeginDisabled(tar == null);
+				if (ImGui.Button("Apply to Target") && tar != null) {
+					var obj = Services.ObjectTable.CreateObjectReference((nint)tar);
+					if (obj != null) PaletteList.Selected.Apply(obj);
+				}
+				ImGui.EndDisabled();
+
 				PaletteEditor.Draw(DefaultPalette, ref PaletteList.Selected, ref ParamContainer, true);
+			}
 
 			ImGui.EndGroup();
 		}

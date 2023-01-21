@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using Dalamud.Game.ClientState.Objects.Types;
 using Newtonsoft.Json.Linq;
-
 using PalettePlus.Structs;
 
 namespace PalettePlus.Palettes {
@@ -41,14 +40,21 @@ namespace PalettePlus.Palettes {
 				SetShaderParam(field.Name, field.GetValue(data)!, false);
 		}
 
-		public void ApplyShaderParams(ref object data) {
-			var type = data.GetType();
+		public unsafe void Apply(GameObject obj) {
+			var model = Model.GetModel(obj);
+			if (model != null)
+				model->ApplyPalette(this);
+		}
 
-			var fields = type.GetFields();
+		public void ApplyShaderParams(ref object data) {
+			var fields = data.GetType().GetFields();
 			foreach (var field in fields) {
 				if (ShaderParams.TryGetValue(field.Name, out var value)) {
 					if (value is JObject j)
 						value = j.ToObject(field.FieldType);
+					else if (value is double s)
+						value = (float)s;
+
 					field.SetValue(data, value);
 				}
 			}

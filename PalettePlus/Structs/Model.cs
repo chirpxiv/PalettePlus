@@ -7,6 +7,7 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using GameObjectStruct = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 using PalettePlus.Palettes;
+using Dalamud.Logging;
 
 namespace PalettePlus.Structs {
 	[StructLayout(LayoutKind.Explicit)]
@@ -55,6 +56,22 @@ namespace PalettePlus.Structs {
 				Model = modelParams,
 				Decal = decalParams
 			};
+		}
+
+		public unsafe void ApplyPalette(Palette p) {
+			var mP = GetModelParams();
+			if (mP != null) {
+				var o = (object)*mP;
+				p.ApplyShaderParams(ref o);
+				*mP = (ModelParams)o;
+			}
+
+			var dP = GetDecalParams();
+			if (dP != null) {
+				var o = (object)*dP;
+				p.ApplyShaderParams(ref o);
+				*dP = (DecalParams)o;
+			}
 		}
 	}
 }
