@@ -44,23 +44,11 @@ namespace PalettePlus.Interface.Components {
 
 					var popup = (PopupMenu)PluginGui.GetWindow<PopupMenu>();
 					popup.Open(() => {
-						ImGui.InputTextWithHint("##NewSaveName", "Palette Name", ref name, 100);
-						if (ImGui.IsKeyDown(ImGuiKey.Enter) && name.Length > 0) {
-							var exists = PalettePlus.Config.SavedPalettes.Any(p => p.Name == name);
-							err = exists ? "a palette with this name already exists." : null;
+						if (NameInput.Draw(ref name, ref err)) {
+							popup.Close();
 
-							if (err == null) {
-								popup.Close();
-
-								var palette = new Palette(name);
-								PalettePlus.Config.SavedPalettes.Add(palette);
-							}
-						}
-
-						if (err != null) {
-							ImGui.PushStyleColor(ImGuiCol.Text, 0xff3030ff);
-							ImGui.Text($"Could not save: {err}");
-							ImGui.PopStyleColor();
+							var palette = new Palette(name);
+							PalettePlus.Config.SavedPalettes.Add(palette);
 						}
 					});
 				}
@@ -69,7 +57,7 @@ namespace PalettePlus.Interface.Components {
 
 				ImGui.BeginDisabled(Selected == null);
 				if (ImGuiComponents.IconButton(FontAwesomeIcon.Trash)) {
-					PalettePlus.Config.SavedPalettes.Remove(Selected);
+					PalettePlus.Config.SavedPalettes.Remove(Selected!);
 					Selected = null;
 				}
 				ImGui.EndDisabled();
@@ -91,6 +79,19 @@ namespace PalettePlus.Interface.Components {
 				if (ImGui.Selectable(save.Name, save == Selected)) {
 					result = true;
 					Selected = save;
+				}
+
+				if (ImGui.IsItemClicked(ImGuiMouseButton.Right)) {
+					var name = save.Name;
+					string? err = null;
+
+					var popup = (PopupMenu)PluginGui.GetWindow<PopupMenu>();
+					popup.Open(() => {
+						if (NameInput.Draw(ref name, ref err, save)) {
+							popup.Close();
+							save.Name = name;
+						}
+					});
 				}
 			}
 			return result;
