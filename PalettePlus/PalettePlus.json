@@ -1,6 +1,7 @@
 {
 	"Author": "Chirp",
 	"Name": "Palette+",
+	"Punchline": "Custom color palettes for FFXIV characters.",
 	"Description": "Custom color palettes for FFXIV characters.",
 	"InternalName": "PalettePlus",
 	"AssemblyVersion": "0.1.0.0",
