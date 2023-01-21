@@ -1,8 +1,14 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using System.Collections.Generic;
-using Dalamud.Game.ClientState.Objects.Types;
+
 using Newtonsoft.Json.Linq;
+
+using Dalamud.Game.ClientState.Objects.Types;
+
 using PalettePlus.Structs;
+using PalettePlus.Palettes.Attributes;
 
 namespace PalettePlus.Palettes {
 	public class Palette {
@@ -50,6 +56,13 @@ namespace PalettePlus.Palettes {
 			var fields = data.GetType().GetFields();
 			foreach (var field in fields) {
 				if (ShaderParams.TryGetValue(field.Name, out var value)) {
+					var link = (ConditionalLink?)field.GetCustomAttributes().FirstOrDefault(attr => attr is ConditionalLink);
+					if (link != null) {
+						var match = (Conditions & link.Conditions) != 0;
+						if (!match && !ShaderParams.TryGetValue(link.LinkedTo, out var _))
+							continue;
+					}
+
 					if (value is JObject j)
 						value = j.ToObject(field.FieldType);
 					else if (value is double s)

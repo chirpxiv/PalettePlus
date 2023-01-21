@@ -96,6 +96,7 @@ namespace PalettePlus.Interface.Windows {
 			if (ImGui.Button("Reset")) {
 				Palette.ShaderParams.Clear();
 				actor.UpdateColors();
+				GetCharaPalette(actor);
 			}
 			//ImGui.EndDisabled();
 
