@@ -4,6 +4,7 @@ using System.Numerics;
 
 using ImGuiNET;
 
+using Dalamud.Interface;
 using Dalamud.Interface.Components;
 
 using PalettePlus.Palettes;
@@ -37,7 +38,7 @@ namespace PalettePlus.Interface.Components {
 				result = DrawList();
 				ImGui.EndChildFrame();
 
-				if (ImGuiComponents.IconButton(Dalamud.Interface.FontAwesomeIcon.Plus)) {
+				if (ImGuiComponents.IconButton(FontAwesomeIcon.Plus)) {
 					var name = "";
 					string? err = null;
 
@@ -63,6 +64,15 @@ namespace PalettePlus.Interface.Components {
 						}
 					});
 				}
+
+				ImGui.SameLine();
+
+				ImGui.BeginDisabled(Selected == null);
+				if (ImGuiComponents.IconButton(FontAwesomeIcon.Trash)) {
+					PalettePlus.Config.SavedPalettes.Remove(Selected);
+					Selected = null;
+				}
+				ImGui.EndDisabled();
 			}
 			ImGui.EndGroup();
 
