@@ -1,13 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Newtonsoft.Json.Linq;
+
 using PalettePlus.Structs;
 
 namespace PalettePlus.Palettes {
 	public class Palette {
+		public string Name = "";
+
 		public PaletteConditions Conditions;
 
 		public Dictionary<string, object> ShaderParams = new();
+
+		public Palette(string name = "") {
+			Name = name;
+		}
 
 		public void SetShaderParam(string key, object value, bool exists) {
 			if (exists)
@@ -19,23 +27,30 @@ namespace PalettePlus.Palettes {
 		public void SetShaderParam(string key, object value)
 			=> SetShaderParam(key, value, ShaderParams.ContainsKey(key));
 
-		public void CopyShaderParams(ModelParams data) {
-			Conditions = PaletteConditions.None;
-			if (data.LeftEyeColor != data.RightEyeColor)
-				Conditions ^= PaletteConditions.Heterochromia;
-			if (data.HairColor != data.HighlightsColor)
-				Conditions ^= PaletteConditions.Highlights;
+		public void CopyShaderParams(object data) {
+			if (data is ModelParams mP) {
+				Conditions = PaletteConditions.None;
+				if (mP.LeftEyeColor != mP.RightEyeColor)
+					Conditions ^= PaletteConditions.Heterochromia;
+				if (mP.HairColor != mP.HighlightsColor)
+					Conditions ^= PaletteConditions.Highlights;
+			}
 
-			var fields = typeof(ModelParams).GetFields();
+			var fields = data.GetType().GetFields();
 			foreach (var field in fields)
 				SetShaderParam(field.Name, field.GetValue(data)!, false);
 		}
 
 		public void ApplyShaderParams(ref object data) {
-			if (data is ModelParams == false) return;
-			foreach (var (name, value) in ShaderParams) {
-				var field = typeof(ModelParams).GetField(name);
-				if (field != null) field.SetValue(data, value);
+			var type = data.GetType();
+
+			var fields = type.GetFields();
+			foreach (var field in fields) {
+				if (ShaderParams.TryGetValue(field.Name, out var value)) {
+					if (value is JObject j)
+						value = j.ToObject(field.FieldType);
+					field.SetValue(data, value);
+				}
 			}
 		}
 	}

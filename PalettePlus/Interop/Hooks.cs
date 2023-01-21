@@ -2,6 +2,7 @@
 using System.Runtime.InteropServices;
 
 using Dalamud.Hooking;
+
 using PalettePlus.Structs;
 
 namespace PalettePlus.Interop {

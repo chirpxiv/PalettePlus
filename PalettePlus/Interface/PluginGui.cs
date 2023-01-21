@@ -29,5 +29,8 @@ namespace PalettePlus.Interface {
 	internal static class WindowExtensions {
 		internal static void Show(this Window window)
 			=> window.IsOpen = true;
+
+		internal static void Close(this Window window)
+			=> window.IsOpen = false;
 	}
 }

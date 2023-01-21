@@ -15,9 +15,11 @@ namespace PalettePlus.Interface.Components {
 		private string SearchString = "";
 		private Dictionary<string, ActorContainer> ActorNames = new();
 
+		internal GameObject? Selected = null;
+
 		// Draw
 
-		internal void Draw(GameObject? selected, Action<GameObject?> callback) {
+		internal void Draw(Action<GameObject?> callback) {
 			var width = Math.Min(ImGui.GetWindowSize().X * 1 / 3, 400);
 
 			ImGui.BeginGroup();
@@ -26,13 +28,13 @@ namespace PalettePlus.Interface.Components {
 			ImGui.InputTextWithHint("##ActorSearch", "Search...", ref SearchString, 32);
 
 			if (ImGui.BeginChildFrame(1, new Vector2(width, -1))) {
-				DrawList(selected, callback);
+				DrawList(callback);
 				ImGui.EndChildFrame();
 			}
 			ImGui.EndGroup();
 		}
 
-		private void DrawList(GameObject? selected, Action<GameObject?> callback) {
+		private void DrawList(Action<GameObject?> callback) {
 			ActorNames.Clear();
 
 			bool isSelectionValid = false;
@@ -49,7 +51,7 @@ namespace PalettePlus.Interface.Components {
 				var name = actor.Name.ToString();
 				if (name.Length == 0) continue;
 
-				if (selected == actor)
+				if (Selected == actor)
 					isSelectionValid = true;
 
 				var cont = new ActorContainer(i, actor);
@@ -57,7 +59,7 @@ namespace PalettePlus.Interface.Components {
 				var exists = ActorNames.TryGetValue(name, out var _);
 				if (exists) {
 					if (i >= GPoseStartIndex) {
-						if (selected != null && selected.Address == ActorNames[name].GameObject.Address)
+						if (Selected != null && Selected.Address == ActorNames[name].GameObject.Address)
 							callback(actor);
 						ActorNames[name] = cont;
 					} else {
@@ -89,7 +91,7 @@ namespace PalettePlus.Interface.Components {
 				if (searchString.Length > 0 && !label.ToLower().Contains(searchString))
 					continue;
 
-				if (ImGui.Selectable(label, selected != null && selected.Address == actor.Address))
+				if (ImGui.Selectable(label, Selected != null && Selected.Address == actor.Address))
 					callback(actor);
 			}
 		}

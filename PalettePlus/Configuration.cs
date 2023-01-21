@@ -14,11 +14,11 @@ namespace PalettePlus {
 		public const int _ConfigVer = 0;
 
 		public int Version { get; set; } = _ConfigVer;
-		public string PluginVersion { get; set; } = PalettePlus.GetVersion();
+		public string PluginVersion = PalettePlus.GetVersion();
 
-		public bool IsFirstTime { get; set; } = true;
+		public bool IsFirstTime = true;
 
-		public Dictionary<string, Palette> SavedPalettes { get; set; } = new();
+		public List<Palette> SavedPalettes = new();
 
 		// Methods
 

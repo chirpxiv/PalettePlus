@@ -15,21 +15,21 @@ namespace PalettePlus.Interface.Windows {
 	public class MainWindow : Window {
 		private const int GPoseStartIndex = 201;
 
-		private GameObject? Selected = null;
-
 		private Palette DefaultPalette = new();
 		private Palette Palette = new();
 
 		private ActorList ActorList = new();
+		private PaletteList PaletteList = new();
+
+		private ParamContainer ParamContainer = new();
 
 		// Window
 
 		public MainWindow() : base(
 			"Palette+"
 		) {
-			RespectCloseHotkey = false;
 			SizeConstraints = new WindowSizeConstraints {
-				MinimumSize = new Vector2(400, 200),
+				MinimumSize = new Vector2(470, 210),
 				MaximumSize = ImGui.GetIO().DisplaySize
 			};
 		}
@@ -45,21 +45,31 @@ namespace PalettePlus.Interface.Windows {
 
 		// Tabs
 
+		private string CurrentTab = "";
+		private bool TabSwitched = false;
+
 		private void DrawTab(string label, Action callback) {
 			if (ImGui.BeginTabItem(label)) {
+				var switched = CurrentTab != label;
+				if (switched) {
+					CurrentTab = label;
+					TabSwitched = true;
+				}
+
 				callback.Invoke();
 				ImGui.EndTabItem();
+
+				if (switched)
+					TabSwitched = false;
 			}
 		}
 
 		// "Edit Players" Tab
 
 		private void DrawPlayersTab() {
-			var size = ImGui.GetWindowSize();
-
 			// Actor list
 			
-			ActorList.Draw(Selected, SelectActor);
+			ActorList.Draw(SelectActor);
 
 			ImGui.SameLine();
 
@@ -70,7 +80,7 @@ namespace PalettePlus.Interface.Windows {
 		}
 
 		private unsafe void DrawActorEdit() {
-			var actor = Selected;
+			var actor = ActorList.Selected;
 			if (actor == null) return;
 
 			ImGui.Button("Save"); // TODO Implement
@@ -86,14 +96,12 @@ namespace PalettePlus.Interface.Windows {
 
 			var model = Model.GetModel(actor);
 			if (model != null) {
-				var cont = new ParamContainer {
-					Model = *model->ModelShader->ModelParams,
-					Decal = *model->DecalShader->DecalParams
-				};
+				ParamContainer.Model = *model->ModelShader->ModelParams;
+				ParamContainer.Decal = *model->DecalShader->DecalParams;
 
-				if (PaletteEditor.Draw(DefaultPalette, ref Palette, ref cont)) {
-					*model->ModelShader->ModelParams = cont.Model;
-					*model->DecalShader->DecalParams = cont.Decal;
+				if (PaletteEditor.Draw(DefaultPalette, ref Palette, ref ParamContainer)) {
+					*model->ModelShader->ModelParams = ParamContainer.Model;
+					*model->DecalShader->DecalParams = ParamContainer.Decal;
 				}
 			}
 		}
@@ -102,31 +110,73 @@ namespace PalettePlus.Interface.Windows {
 			if (obj == null)
 				obj = Services.ClientState.LocalPlayer;
 
-			Selected = obj;
-			Palette.ShaderParams.Clear();
+			ActorList.Selected = obj;
 
 			// Reconstruct Palette for charas previously modified.
 			// This is hacky but it works fine for now.
 
-			var model = obj != null ? Model.GetModel(obj) : null;
-			var color = model != null ? model->GetColorData() : null;
-			if (color != null) {
-				Palette.CopyShaderParams(*color);
-
-				DefaultPalette = new Palette();
-				DefaultPalette.CopyShaderParams(model->GenerateColorValues().Model);
-
-				foreach (var (key, value) in Palette.ShaderParams) {
-					if (value.Equals(DefaultPalette.ShaderParams[key]))
-						Palette.ShaderParams.Remove(key);
-				}
-			}
+			if (obj != null)
+				GetCharaPalette(obj);
 		}
 
 		// "Saved Palettes" Tab
 
-		private void DrawPalettesTab() {
-			// TODO
+		private unsafe void DrawPalettesTab() {
+			var select = PaletteList.Draw();
+			if (select || TabSwitched) {
+				var local = Services.ClientState.LocalPlayer;
+				if (local != null)
+					GetCharaPalette(local, true);
+
+				if (PaletteList.Selected != null) {
+					var model = (object)ParamContainer.Model;
+					PaletteList.Selected.ApplyShaderParams(ref model);
+					ParamContainer.Model = (ModelParams)model;
+
+					var decal = (object)ParamContainer.Decal;
+					PaletteList.Selected.ApplyShaderParams(ref decal);
+					ParamContainer.Decal = (DecalParams)decal;
+				}
+			}
+
+			ImGui.SameLine();
+
+			ImGui.BeginGroup();
+
+			if (PaletteList.Selected != null)
+				PaletteEditor.Draw(DefaultPalette, ref PaletteList.Selected, ref ParamContainer, true);
+
+			ImGui.EndGroup();
+		}
+
+		// Util
+
+		private unsafe void GetCharaPalette(GameObject obj, bool contain = false) {
+			var model = Model.GetModel(obj);
+			var color = model != null ? model->GetModelParams() : null;
+			if (color == null) return;
+
+			// TODO: Refactor
+
+			Palette.ShaderParams.Clear();
+
+			Palette.CopyShaderParams(*color);
+
+			var decal = model->GetDecalParams();
+			if (decal != null)
+				Palette.CopyShaderParams(*decal);
+
+			DefaultPalette = new Palette();
+
+			var vals = model->GenerateColorValues();
+			DefaultPalette.CopyShaderParams(vals.Model);
+			DefaultPalette.CopyShaderParams(vals.Decal);
+			if (contain) ParamContainer = vals;
+
+			foreach (var (key, value) in Palette.ShaderParams) {
+				if (value.Equals(DefaultPalette.ShaderParams[key]))
+					Palette.ShaderParams.Remove(key);
+			}
 		}
 	}
 }

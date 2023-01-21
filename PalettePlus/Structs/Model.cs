@@ -16,9 +16,14 @@ namespace PalettePlus.Structs {
 		[FieldOffset(0x9d8)] public unsafe ModelShader* ModelShader;
 		[FieldOffset(0x9e0)] public unsafe ModelShader* DecalShader;
 
-		public unsafe ModelParams* GetColorData() {
+		public unsafe ModelParams* GetModelParams() {
 			if (ModelShader == null) return null;
 			return ModelShader->ModelParams;
+		}
+
+		public unsafe DecalParams* GetDecalParams() {
+			if (DecalShader == null) return null;
+			return DecalShader->DecalParams;
 		}
 
 		public unsafe static Model* GetModel(GameObject obj) {

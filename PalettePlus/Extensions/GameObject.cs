@@ -11,7 +11,7 @@ namespace PalettePlus.Extensions {
 
 			Hooks.UpdateColorsHook.Original(model);
 
-			return model->GetColorData();
+			return model->GetModelParams();
 		}
 	}
 }
