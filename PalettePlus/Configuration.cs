@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using Dalamud.Configuration;
 using Dalamud.Logging;
+using Dalamud.Configuration;
 
+using PalettePlus.Services;
 using PalettePlus.Palettes;
 using PalettePlus.Interface;
 using PalettePlus.Interface.Windows;
@@ -38,7 +39,7 @@ namespace PalettePlus {
 			}
 		}
 
-		public void Save() => Services.Interface.SavePluginConfig(this);
+		public void Save() => PluginServices.Interface.SavePluginConfig(this);
 
 		private void Upgrade() {
 			PluginLog.Warning(string.Format(
@@ -51,7 +52,7 @@ namespace PalettePlus {
 
 		public static void LoadConfig() {
 			try {
-				PalettePlus.Config = Services.Interface.GetPluginConfig() as Configuration ?? new();
+				PalettePlus.Config = PluginServices.Interface.GetPluginConfig() as Configuration ?? new();
 			} catch (Exception e) {
 				PluginLog.Error("Failed to load ColorEdit config. Settings have been reset.", e);
 				PalettePlus.Config = new();

@@ -7,6 +7,7 @@ using ImGuiNET;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using PalettePlus.Structs;
+using PalettePlus.Services;
 
 namespace PalettePlus.Interface.Components {
 	internal class ActorList {
@@ -39,7 +40,7 @@ namespace PalettePlus.Interface.Components {
 
 			bool isSelectionValid = false;
 			for (var i = 0; i < GPoseStartIndex + 200; i++) {
-				var actor = Services.ObjectTable[i];
+				var actor = PluginServices.ObjectTable[i];
 				if (actor == null) continue;
 
 				unsafe {

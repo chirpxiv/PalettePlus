@@ -7,7 +7,6 @@ using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using GameObjectStruct = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 using PalettePlus.Palettes;
-using Dalamud.Logging;
 
 namespace PalettePlus.Structs {
 	[StructLayout(LayoutKind.Explicit)]

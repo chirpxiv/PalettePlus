@@ -7,8 +7,8 @@ using Dalamud.Game.ClientState.Objects;
 
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
 
-namespace PalettePlus {
-	internal class Services {
+namespace PalettePlus.Services {
+	internal class PluginServices {
 		[PluginService] internal static DalamudPluginInterface Interface { get; set; } = null!;
 		[PluginService] internal static CommandManager CommandManager { get; set; } = null!;
 		[PluginService] internal static ObjectTable ObjectTable { get; set; } = null!;
@@ -17,6 +17,6 @@ namespace PalettePlus {
 
 		internal unsafe static TargetSystem* Targets = TargetSystem.Instance();
 
-		internal static void Init(DalamudPluginInterface dalamud) => dalamud.Create<Services>();
+		internal static void Init(DalamudPluginInterface dalamud) => dalamud.Create<PluginServices>();
 	}
 }

@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Dalamud.Hooking;
 
 using PalettePlus.Structs;
+using PalettePlus.Services;
 
 namespace PalettePlus.Interop {
 	internal static class Hooks {
@@ -20,13 +21,13 @@ namespace PalettePlus.Interop {
 		internal static GenerateColorsDelegate GenerateColors = null!;
 
 		internal unsafe static void Init() {
-			UnknownQWord = *(IntPtr*)Services.SigScanner.GetStaticAddressFromSig(QWordSig);
+			UnknownQWord = *(IntPtr*)PluginServices.SigScanner.GetStaticAddressFromSig(QWordSig);
 
-			var updateColors = Services.SigScanner.ScanText(UpdateColorsSig);
+			var updateColors = PluginServices.SigScanner.ScanText(UpdateColorsSig);
 			UpdateColorsHook = Hook<UpdateColorsDelegate>.FromAddress(updateColors, UpdateColorsDetour);
 			UpdateColorsHook.Enable();
 
-			var generateColors = Services.SigScanner.ScanText(GenerateColorsSig);
+			var generateColors = PluginServices.SigScanner.ScanText(GenerateColorsSig);
 			GenerateColors = Marshal.GetDelegateForFunctionPointer<GenerateColorsDelegate>(generateColors);
 		}
 

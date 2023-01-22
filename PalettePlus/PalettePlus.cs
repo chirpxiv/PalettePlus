@@ -2,6 +2,7 @@
 
 using Dalamud.Game.Command;
 
+using PalettePlus.Services;
 using PalettePlus.Interop;
 using PalettePlus.Interface;
 using PalettePlus.Interface.Windows;
@@ -14,16 +15,16 @@ namespace PalettePlus {
 		public static Configuration Config { get; internal set; } = null!;
 
 		public PalettePlus(DalamudPluginInterface dalamud) {
-			Services.Init(dalamud);
+			PluginServices.Init(dalamud);
 
 			Configuration.LoadConfig();
 
 			Hooks.Init();
 
-			Services.Interface.UiBuilder.DisableGposeUiHide = true;
-			Services.Interface.UiBuilder.Draw += PluginGui.Windows.Draw;
+			PluginServices.Interface.UiBuilder.DisableGposeUiHide = true;
+			PluginServices.Interface.UiBuilder.Draw += PluginGui.Windows.Draw;
 
-			Services.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) {
+			PluginServices.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) {
 				HelpMessage = "/palette - Show the Palette+ window."
 			});
 		}
@@ -31,9 +32,9 @@ namespace PalettePlus {
 		public void Dispose() {
 			Hooks.Dispose();
 
-			Services.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;
+			PluginServices.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;
 
-			Services.CommandManager.RemoveHandler(CommandName);
+			PluginServices.CommandManager.RemoveHandler(CommandName);
 
 			Config.Save();
 		}
