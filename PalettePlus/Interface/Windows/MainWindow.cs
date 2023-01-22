@@ -11,6 +11,9 @@ namespace PalettePlus.Interface.Windows {
 	public class MainWindow : Window {
 		private ActorEdit ActorEdit = new();
 		private PaletteEdit PaletteEdit = new();
+		private PersistEdit PersistEdit = new();
+
+		private string CurrentTab = "";
 
 		// Window
 
@@ -27,14 +30,10 @@ namespace PalettePlus.Interface.Windows {
 			if (ImGui.BeginTabBar("ColorEdit Tabs")) {
 				DrawTab("Edit Players", ActorEdit.Draw);
 				DrawTab("Saved Palettes", PaletteEdit.Draw);
-				DrawTab("Persistence", (bool _) => {});
+				DrawTab("Persistence", PersistEdit.Draw);
 				ImGui.EndTabBar();
 			}
 		}
-
-		// Tabs
-
-		private string CurrentTab = "";
 
 		private void DrawTab(string label, Action<bool> callback) {
 			if (ImGui.BeginTabItem(label)) {

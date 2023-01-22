@@ -18,7 +18,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 
 		private ParamContainer ParamContainer = new();
 
-		internal void Draw(bool firstFrame = false) {
+		internal void Draw(bool firstFrame) {
 			// Actor list
 
 			ActorList.Draw(SelectActor);
@@ -31,7 +31,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.EndGroup();
 		}
 
-		private unsafe void DrawActorEdit(bool firstFrame = false) {
+		private unsafe void DrawActorEdit(bool firstFrame) {
 			if (firstFrame)
 				SelectActor(ActorList.Selected);
 

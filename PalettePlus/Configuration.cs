@@ -20,6 +20,7 @@ namespace PalettePlus {
 		public bool IsFirstTime = true;
 
 		public List<Palette> SavedPalettes = new();
+		public List<Persist> Persistence = new();
 
 		// Methods
 

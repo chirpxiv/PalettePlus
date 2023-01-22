@@ -13,7 +13,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 
 		// "Saved Palettes" Tab
 
-		internal unsafe void Draw(bool firstFrame = false) {
+		internal unsafe void Draw(bool firstFrame) {
 			var select = PaletteList.Draw();
 			if (select || firstFrame) {
 				var local = PluginServices.ClientState.LocalPlayer;

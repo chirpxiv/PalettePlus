@@ -6,7 +6,7 @@ using GameObjectStruct = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 namespace PalettePlus.Structs {
 	[StructLayout(LayoutKind.Explicit)]
 	public struct Actor {
-		[FieldOffset(0)] GameObjectStruct GameObject;
+		[FieldOffset(0)] internal GameObjectStruct GameObject;
 
 		// TODO: ClientStructs PR
 		[FieldOffset(0x1B4)] public uint ModelId;
