@@ -6,6 +6,7 @@ using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Services;
 using PalettePlus.Extensions;
+using PalettePlus.Interface.Dialog;
 using PalettePlus.Interface.Components;
 
 namespace PalettePlus.Interface.Windows.Tabs {
@@ -38,7 +39,21 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			var actor = ActorList.Selected;
 			if (actor == null) return;
 
-			ImGui.Button("Save"); // TODO Implement
+			if (ImGui.Button("Save")) {
+				var name = "";
+				string? err = null;
+
+				var popup = (PopupMenu)PluginGui.GetWindow<PopupMenu>();
+				popup.Open(() => {
+					if (NameInput.Draw(ref name, ref err)) {
+						popup.Close();
+
+						var palette = (Palette)Palette.Clone();
+						palette.Name = name;
+						PalettePlus.Config.SavedPalettes.Add(palette);
+					}
+				});
+			}
 
 			ImGui.SameLine();
 

@@ -11,7 +11,7 @@ using PalettePlus.Structs;
 using PalettePlus.Palettes.Attributes;
 
 namespace PalettePlus.Palettes {
-	public class Palette {
+	public class Palette : ICloneable {
 		public string Name = "";
 
 		public PaletteConditions Conditions;
@@ -20,6 +20,14 @@ namespace PalettePlus.Palettes {
 
 		public Palette(string name = "") {
 			Name = name;
+		}
+
+		public object Clone() {
+			var clone = (Palette)MemberwiseClone();
+			clone.ShaderParams = new();
+			foreach (var (key, val) in ShaderParams)
+				clone.ShaderParams.Add(key, val);
+			return clone;
 		}
 
 		public void SetShaderParam(string key, object value, bool exists) {
