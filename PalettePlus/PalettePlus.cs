@@ -24,6 +24,8 @@ namespace PalettePlus {
 			PluginServices.Interface.UiBuilder.DisableGposeUiHide = true;
 			PluginServices.Interface.UiBuilder.Draw += PluginGui.Windows.Draw;
 
+			PluginServices.Interface.UiBuilder.OpenConfigUi += ToggleMainWindow;
+
 			PluginServices.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) {
 				HelpMessage = "/palette - Show the Palette+ window."
 			});
@@ -39,8 +41,11 @@ namespace PalettePlus {
 			Config.Save();
 		}
 
+		private void ToggleMainWindow()
+			=> PluginGui.GetWindow<MainWindow>().Toggle();
+
 		private void OnCommand(string _, string arguments)
-			=> PluginGui.GetWindow<MainWindow>().Show();
+			=> ToggleMainWindow();
 
 		internal static string GetVersion()
 			=> typeof(PalettePlus).Assembly.GetName().Version!.ToString(fieldCount: 3);

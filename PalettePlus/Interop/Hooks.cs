@@ -3,6 +3,8 @@ using System.Runtime.InteropServices;
 
 using Dalamud.Hooking;
 
+using FFXIVClientStructs.FFXIV.Client.Game.Object;
+
 using PalettePlus.Structs;
 using PalettePlus.Services;
 using PalettePlus.Extensions;
@@ -22,7 +24,7 @@ namespace PalettePlus.Interop {
 		internal unsafe delegate IntPtr GenerateColorsDelegate(IntPtr a1, ModelShader* model, ModelShader* decal, byte* customize);
 		internal static GenerateColorsDelegate GenerateColors = null!;
 
-		internal unsafe delegate nint EnableDrawDelegate(nint a1);
+		internal unsafe delegate nint EnableDrawDelegate(GameObject* a1);
 		internal static Hook<EnableDrawDelegate> EnableDrawHook = null!;
 
 		internal unsafe static void Init() {
@@ -49,16 +51,16 @@ namespace PalettePlus.Interop {
 			EnableDrawHook.Dispose();
 		}
 
-		internal unsafe static nint EnableDrawDetour(nint a1) {
-			var c1 = ((*(byte*)(a1 + 149)) & 0x40) != 0;
-			var c2 = (*(int*)(a1 + 276) & 0x2000000) == 0;
+		internal unsafe static nint EnableDrawDetour(GameObject* a1) {
+			var c1 = ((int)a1->TargetableStatus & 0x40) != 0;
+			var c2 = (a1->RenderFlags & 0x2000000) == 0;
 			var isNew = !(c1 && c2);
 
 			var exec = EnableDrawHook.Original(a1);
 
 			if (isNew) {
-				var obj = PluginServices.ObjectTable.CreateObjectReference(a1);
-				if (obj != null && obj.Name != null) {
+				var obj = PluginServices.ObjectTable.CreateObjectReference((nint)a1);
+				if (obj != null && obj.Name != null && ((Actor*)a1)->ModelId == 0) {
 					var palettes = obj.GetPersists();
 					foreach (var palette in palettes)
 						palette.Apply(obj);

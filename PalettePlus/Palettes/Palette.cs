@@ -47,6 +47,8 @@ namespace PalettePlus.Palettes {
 		}
 
 		public unsafe void Apply(GameObject obj) {
+			//if (obj.ObjectKind)
+
 			var model = Model.GetModel(obj);
 			if (model != null)
 				model->ApplyPalette(this);

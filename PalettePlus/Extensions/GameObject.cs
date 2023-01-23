@@ -26,7 +26,7 @@ namespace PalettePlus.Extensions {
 				if (persist.Character == name) {
 					var palette = PalettePlus.Config.SavedPalettes.FirstOrDefault(p => p.Name == persist.PaletteId);
 					if (palette != null)
-						palette.Apply(actor);
+						result.Add(palette);
 				}
 			}
 

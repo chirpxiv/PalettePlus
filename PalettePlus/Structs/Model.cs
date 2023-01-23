@@ -58,6 +58,8 @@ namespace PalettePlus.Structs {
 		}
 
 		public unsafe void ApplyPalette(Palette p) {
+
+
 			var mP = GetModelParams();
 			if (mP != null) {
 				var o = (object)*mP;
