@@ -10,7 +10,7 @@ namespace PalettePlus.Interface.Components {
 			var result = false;
 
 			ImGui.InputTextWithHint("##NewSaveName", "Palette Name", ref name, 100);
-			if (ImGui.IsKeyDown(ImGuiKey.Enter) && name.Length > 0) {
+			if ((ImGui.IsKeyDown(ImGuiKey.Enter) || ImGui.IsKeyDown(ImGuiKey.KeypadEnter)) && name.Length > 0) {
 				var _name = name; // CS1628
 				var exists = PalettePlus.Config.SavedPalettes.Any(p => p.Name == _name && p != cur);
 				err = exists ? "a palette with this name already exists." : null;
