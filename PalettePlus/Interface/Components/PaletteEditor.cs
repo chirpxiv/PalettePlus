@@ -8,6 +8,7 @@ using ImGuiNET;
 
 using PalettePlus.Palettes;
 using PalettePlus.Palettes.Attributes;
+using PalettePlus.Services;
 
 namespace PalettePlus.Interface.Components {
 	public static class PaletteEditor {
@@ -82,10 +83,12 @@ namespace PalettePlus.Interface.Components {
 			var data = field.FieldInfo.GetValue(param);
 			if (data == null) return false;
 
-			var key = field.FieldInfo.Name;
-
 			var draw = true;
-			var label = key; // todo
+
+			var key = field.FieldInfo.Name;
+			var label = PaletteService.GetLabel(key);
+			if (key == "LeftEyeColor" && (palette.Conditions & PaletteConditions.Heterochromia) == 0)
+				label = "Eye Color";
 
 			var active = palette.ShaderParams.ContainsKey(key);
 			var _active = active;

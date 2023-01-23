@@ -1,11 +1,32 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
+﻿using System.Collections.Generic;
+
+using Dalamud.Game.ClientState.Objects.Types;
 
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
 
 namespace PalettePlus.Services {
 	public static class PaletteService {
+		private static Dictionary<string, string> FieldLabels = new() {
+			{ "SkinTone", "Skin Tone" },
+			{ "MuscleTone", "Muscle Tone" },
+			{ "SkinGloss", "Skin Gloss" },
+			{ "LipColor", "Lip Color" },
+			{ "HairColor", "Hair Color" },
+			{ "HairShine", "Hair Shine" },
+			{ "HighlightsColor", "Highlights" },
+			{ "LeftEyeColor", "Left Eye" },
+			{ "RightEyeColor", "Right Eye" },
+			{ "RaceFeatureColor", "Race Feature" },
+			{ "FacePaintOffset", "Facepaint Offset" },
+			{ "FacePaintWidth", "Facepaint Width" },
+			{ "FacePaintColor", "Facepaint Color" }
+		};
+
 		public static ParamContainer ParamContainer = new();
+
+		public static string GetLabel(string key)
+			=> FieldLabels.TryGetValue(key, out var val) ? val : key;
 
 		public unsafe static void GetCharaPalette(GameObject obj, out Palette palette, out Palette basePalette, bool contain = false) {
 			palette = new();
