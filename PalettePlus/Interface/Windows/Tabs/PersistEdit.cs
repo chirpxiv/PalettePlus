@@ -45,10 +45,12 @@ namespace PalettePlus.Interface.Windows.Tabs {
 
 		private void DrawRow(Persist persist, bool add = false) {
 			if (add) {
+				ImGui.BeginDisabled(string.IsNullOrEmpty(Persist.Character) || string.IsNullOrEmpty(Persist.PaletteId));
 				if (ImGuiComponents.IconButton(PersistIndex, FontAwesomeIcon.Plus)) {
 					PalettePlus.Config.Persistence.Add(persist);
 					Persist = new();
 				}
+				ImGui.EndDisabled();
 			} else {
 				ImGui.Checkbox($"##PersistEnabled{PersistIndex}", ref persist.Enabled);
 			}
