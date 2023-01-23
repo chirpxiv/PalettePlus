@@ -37,7 +37,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 
 			PersistIndex = 0;
 
-			foreach (var persist in PalettePlus.Config.Persistence)
+			foreach (var persist in PalettePlus.Config.Persistence.ToArray())
 				DrawRow(persist);
 
 			DrawRow(Persist, true);
