@@ -17,8 +17,8 @@
 			"chirp"
 		],
 		"IconUrl": "https://github.com/chirpxiv/PalettePlus/raw/main/icon.png",
-		"DownloadLinkInstall": "https://github.com/chirpxiv/PalettePlus/releases/download/v0.1.1/latest.zip",
-		"DownloadLinkTesting": "https://github.com/chirpxiv/PalettePlus/releases/download/v0.1.1/latest.zip",
-		"DownloadLinkUpdate": "https://github.com/chirpxiv/PalettePlus/releases/download/v0.1.1/latest.zip"
+		"DownloadLinkInstall": "https://github.com/chirpxiv/PalettePlus/releases/download/v0.1.1.1/latest.zip",
+		"DownloadLinkTesting": "https://github.com/chirpxiv/PalettePlus/releases/download/v0.1.1.1/latest.zip",
+		"DownloadLinkUpdate": "https://github.com/chirpxiv/PalettePlus/releases/download/v0.1.1.1/latest.zip"
 	}
 ]
