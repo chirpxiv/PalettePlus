@@ -14,6 +14,7 @@ namespace PalettePlus.Interop {
 		private const string QWordSig = "4C 8B C0 48 8B 0D ?? ?? ?? ??";
 		private const string UpdateColorsSig = "E8 ?? ?? ?? ?? B2 FF 48 8B CB";
 		private const string GenerateColorsSig = "48 8B C4 4C 89 40 18 48 89 50 10 55 53";
+		private const string EnableDrawSig = "E8 ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? 48 85 C9 74 33 45 33 C0";
 
 		internal static IntPtr UnknownQWord;
 
@@ -38,8 +39,8 @@ namespace PalettePlus.Interop {
 			var generateColors = PluginServices.SigScanner.ScanText(GenerateColorsSig);
 			GenerateColors = Marshal.GetDelegateForFunctionPointer<GenerateColorsDelegate>(generateColors);
 
-			var test = PluginServices.SigScanner.ScanText("E8 ?? ?? ?? ?? 48 8B 8B ?? ?? ?? ?? 48 85 C9 74 33 45 33 C0");
-			EnableDrawHook = Hook<EnableDrawDelegate>.FromAddress(test, EnableDrawDetour);
+			var enableDraw = PluginServices.SigScanner.ScanText(EnableDrawSig);
+			EnableDrawHook = Hook<EnableDrawDelegate>.FromAddress(enableDraw, EnableDrawDetour);
 			EnableDrawHook.Enable();
 		}
 
