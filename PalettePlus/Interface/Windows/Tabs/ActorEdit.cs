@@ -8,6 +8,7 @@ using PalettePlus.Services;
 using PalettePlus.Extensions;
 using PalettePlus.Interface.Dialog;
 using PalettePlus.Interface.Components;
+using Dalamud.Logging;
 
 namespace PalettePlus.Interface.Windows.Tabs {
 	internal class ActorEdit {

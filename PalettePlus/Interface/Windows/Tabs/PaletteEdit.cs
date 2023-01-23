@@ -53,7 +53,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 				}
 				ImGui.EndDisabled();
 
-				PaletteEditor.Draw(DefaultPalette, ref PaletteList.Selected, ref PaletteService.ParamContainer, true);
+				PaletteEditor.Draw(DefaultPalette, ref PaletteList.Selected, ref PaletteService.ParamContainer);
 			}
 
 			ImGui.EndGroup();

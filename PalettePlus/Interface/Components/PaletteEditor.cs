@@ -38,11 +38,11 @@ namespace PalettePlus.Interface.Components {
 			PaletteFields.Sort((a,b) => b.FieldInfo.FieldType == typeof(float) ? -1 : 0);
 		}
 
-		public static bool Draw(Palette defaults, ref Palette palette, ref ParamContainer cont, bool setPalette = false) {
+		public static bool Draw(Palette defaults, ref Palette palette, ref ParamContainer cont) {
 			var result = false;
 			if (ImGui.BeginChildFrame(2, new Vector2(-1, -1))) {
 				DrawToggles(ref palette);
-				result = DrawFields(defaults, ref palette, ref cont, setPalette);
+				result = DrawFields(defaults, ref palette, ref cont);
 				ImGui.EndChildFrame();
 			}
 			return result;
@@ -65,14 +65,14 @@ namespace PalettePlus.Interface.Components {
 			ImGui.Spacing();
 		}
 
-		public static bool DrawFields(Palette defaults, ref Palette palette, ref ParamContainer cont, bool setPalette = false) {
+		public static bool DrawFields(Palette defaults, ref Palette palette, ref ParamContainer cont) {
 			var result = false;
 			foreach (var field in PaletteFields)
-				result |= DrawField(defaults, ref palette, ref cont, setPalette, field);
+				result |= DrawField(defaults, ref palette, ref cont, field);
 			return result;
 		}
 
-		private static bool DrawField(Palette defaults, ref Palette palette, ref ParamContainer cont, bool setPalette, PaletteField field) {
+		private static bool DrawField(Palette defaults, ref Palette palette, ref ParamContainer cont, PaletteField field) {
 			var contParam = ContainerFields[field.ReflectedType];
 			object contBox = cont;
 
@@ -155,7 +155,7 @@ namespace PalettePlus.Interface.Components {
 			}
 
 			if (newVal != null) {
-				if (active && setPalette) palette.ShaderParams[key] = newVal;
+				if (active) palette.ShaderParams[key] = newVal;
 				field.FieldInfo.SetValue(param, newVal);
 				contParam.SetValue(contBox, param);
 				return true;
