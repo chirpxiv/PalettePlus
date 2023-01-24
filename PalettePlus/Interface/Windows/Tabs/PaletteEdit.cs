@@ -6,6 +6,7 @@ using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Services;
 using PalettePlus.Interface.Components;
+using Dalamud.Logging;
 
 namespace PalettePlus.Interface.Windows.Tabs {
 	internal class PaletteEdit {

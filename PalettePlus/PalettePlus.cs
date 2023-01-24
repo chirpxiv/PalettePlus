@@ -21,6 +21,8 @@ namespace PalettePlus {
 
 			Hooks.Init();
 
+			IpcProvider.Init();
+
 			PluginServices.Interface.UiBuilder.DisableGposeUiHide = true;
 			PluginServices.Interface.UiBuilder.Draw += PluginGui.Windows.Draw;
 
@@ -32,6 +34,8 @@ namespace PalettePlus {
 		}
 
 		public void Dispose() {
+			IpcProvider.Dispose();
+
 			Hooks.Dispose();
 
 			PluginServices.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;

@@ -72,38 +72,16 @@ namespace PalettePlus.Services {
 				default:
 					return stored;
 			}
-
-			//var result = 
-
-			//var active = new Palette();
-
-			/*var persists = chara.GetPersists();
-
-			foreach (var persist in persists)
-				active.Add(persist);
-
-			var add = false;
-			if (!ActivePalettes.TryGetValue(chara, out var baseVals)) {
-				add = true;
-				BuildCharaPalette(chara, out baseVals, out _);
-			}
-
-			active.Add(baseVals);
-
-			if (add) ActivePalettes[chara] = active;*/
-
-			//return active;
 		}
 
 		public static void SetCharaPalette(Character chara, Palette palette) {
 			if (chara.ObjectIndex > 200) {
 				var ovw = chara.FindOverworldEquiv();
-				if (ovw != null && ovw is Character ovwChara) {
+				if (ovw != null && ovw is Character ovwChara)
 					chara = ovwChara;
-					palette.Apply(chara);
-				}
 			}
 
+			palette.Apply(chara);
 			ActivePalettes[chara] = palette;
 		}
 
