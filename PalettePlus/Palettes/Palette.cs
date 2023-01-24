@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
 
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 using Dalamud.Game.ClientState.Objects.Types;
@@ -22,6 +23,8 @@ namespace PalettePlus.Palettes {
 			Name = name;
 		}
 
+		// Palette
+
 		public object Clone() {
 			var clone = (Palette)MemberwiseClone();
 			clone.ShaderParams = new();
@@ -29,6 +32,14 @@ namespace PalettePlus.Palettes {
 				clone.ShaderParams.Add(key, val);
 			return clone;
 		}
+
+		public unsafe void Apply(GameObject obj) {
+			var model = Model.GetModel(obj);
+			if (model != null)
+				model->ApplyPalette(this);
+		}
+
+		// Shader Params
 
 		public void SetShaderParam(string key, object value, bool exists) {
 			if (exists)
@@ -54,14 +65,6 @@ namespace PalettePlus.Palettes {
 				SetShaderParam(field.Name, field.GetValue(data)!, false);
 		}
 
-		public unsafe void Apply(GameObject obj) {
-			//if (obj.ObjectKind)
-
-			var model = Model.GetModel(obj);
-			if (model != null)
-				model->ApplyPalette(this);
-		}
-
 		public void ApplyShaderParams(ref object data) {
 			var fields = data.GetType().GetFields();
 			foreach (var field in fields) {
@@ -82,6 +85,12 @@ namespace PalettePlus.Palettes {
 				}
 			}
 		}
+
+		// Conversion
+
+		public string ToJson() => JsonConvert.SerializeObject(this);
+
+		public static Palette FromJson(string json) => JsonConvert.DeserializeObject<Palette>(json);
 	}
 
 	[Flags]

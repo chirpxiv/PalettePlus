@@ -7,7 +7,6 @@ using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 using PalettePlus.Services;
 using PalettePlus.Extensions;
-using Dalamud.Logging;
 
 namespace PalettePlus.Palettes {
 	public class Persist {
