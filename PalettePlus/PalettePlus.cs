@@ -29,7 +29,7 @@ namespace PalettePlus {
 			PluginServices.Interface.UiBuilder.OpenConfigUi += ToggleMainWindow;
 
 			PluginServices.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) {
-				HelpMessage = "/palette - Show the Palette+ window."
+				HelpMessage = "Show the Palette+ window."
 			});
 		}
 
