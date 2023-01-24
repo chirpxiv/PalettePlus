@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
-
 using Dalamud.Game.ClientState.Objects.Types;
-
-using PalettePlus.Structs;
-using PalettePlus.Palettes;
+using Dalamud.Logging;
 using PalettePlus.Extensions;
+using PalettePlus.Palettes;
+using PalettePlus.Structs;
 
 namespace PalettePlus.Services {
 	public enum ApplyOrder {
@@ -135,6 +134,14 @@ namespace PalettePlus.Services {
 			foreach (var (key, value) in palette.ShaderParams) {
 				if (value.Equals(basePalette.ShaderParams[key]))
 					palette.ShaderParams.Remove(key);
+			}
+		}
+
+		public static void RedrawActivePalettes()
+		{
+			foreach (var palette in ActivePalettes.Keys)
+			{
+				PluginServices.ObjectTable.CreateObjectReference(palette.Address)?.Redraw();
 			}
 		}
 	}
