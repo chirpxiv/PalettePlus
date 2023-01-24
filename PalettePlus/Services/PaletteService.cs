@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+
 using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Logging;
-using PalettePlus.Extensions;
-using PalettePlus.Palettes;
+
 using PalettePlus.Structs;
+using PalettePlus.Palettes;
+using PalettePlus.Extensions;
 
 namespace PalettePlus.Services {
 	public enum ApplyOrder {
