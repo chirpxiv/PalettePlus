@@ -5,6 +5,7 @@ using Dalamud.Interface.Components;
 
 using PalettePlus.Palettes;
 using PalettePlus.Interface.Components;
+using Dalamud.Logging;
 
 namespace PalettePlus.Interface.Windows.Tabs {
 	internal class PersistEdit {
@@ -29,8 +30,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.NextColumn();
 			var pos = ImGui.GetCursorPosX();
 			var avail = ImGui.GetContentRegionAvail().X;
-			var labelChara = "Character";
-			ImGui.Text(labelChara);
+			ImGui.Text("Character");
 			ImGui.SameLine();
 			ImGui.SetCursorPosX(pos + ImGui.GetStyle().FramePadding.X + (avail * 2/3));
 			ImGui.Text("World (Optional)");
@@ -50,6 +50,8 @@ namespace PalettePlus.Interface.Windows.Tabs {
 		}
 
 		private void DrawRow(Persist persist, bool add = false) {
+			var redraw = false;
+
 			if (add) {
 				ImGui.BeginDisabled(string.IsNullOrEmpty(Persist.Character) || string.IsNullOrEmpty(Persist.PaletteId));
 				if (ImGuiComponents.IconButton(PersistIndex, FontAwesomeIcon.Plus)) {
@@ -58,13 +60,14 @@ namespace PalettePlus.Interface.Windows.Tabs {
 				}
 				ImGui.EndDisabled();
 			} else {
-				ImGui.Checkbox($"##PersistEnabled{PersistIndex}", ref persist.Enabled);
+				redraw |= ImGui.Checkbox($"##PersistEnabled{PersistIndex}", ref persist.Enabled);
 			}
 
 			ImGui.NextColumn();
 			var avail = ImGui.GetContentRegionAvail().X;
 			ImGui.SetNextItemWidth(avail * 2/3);
 			ImGui.InputTextWithHint($"##PersistCharaName{PersistIndex}", "Enter character name...", ref persist.Character, 50);
+			redraw |= ImGui.IsItemDeactivatedAfterEdit();
 
 			ImGui.SameLine();
 
@@ -72,11 +75,14 @@ namespace PalettePlus.Interface.Windows.Tabs {
 
 			ImGui.SetNextItemWidth(avail * 1/3);
 			ImGui.InputTextWithHint($"##PersistWorld{PersistIndex}", "Enter world...", ref persist.CharaWorld, 50);
+			redraw |= ImGui.IsItemDeactivatedAfterEdit();
 
 			ImGui.NextColumn();
 			ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
-			if (PaletteSelect.Draw($"##PersistPalette{PersistIndex}", persist.PaletteId == "" ? "Select a palette..." : persist.PaletteId, out var selected))
+			if (PaletteSelect.Draw($"##PersistPalette{PersistIndex}", persist.PaletteId == "" ? "Select a palette..." : persist.PaletteId, out var selected)) {
+				redraw = true; 
 				persist.PaletteId = selected!.Name;
+			}
 
 			if (ImGui.IsItemClicked(ImGuiMouseButton.Right))
 				persist.PaletteId = "";
@@ -87,6 +93,9 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			}
 
 			ImGui.NextColumn();
+
+			if (!add && redraw)
+				persist.RedrawTargetActor();
 
 			PersistIndex++;
 		}
