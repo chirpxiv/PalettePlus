@@ -37,6 +37,7 @@ namespace PalettePlus {
 			IpcProvider.Dispose();
 
 			Hooks.Dispose();
+			PaletteService.RedrawActivePalettes();
 
 			PluginServices.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;
 

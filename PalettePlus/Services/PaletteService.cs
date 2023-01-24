@@ -115,5 +115,13 @@ namespace PalettePlus.Services {
 					palette.ShaderParams.Remove(key);
 			}
 		}
+
+		public static void RedrawActivePalettes()
+		{
+			foreach (var palette in ActivePalettes.Keys)
+			{
+				PluginServices.ObjectTable.CreateObjectReference(palette.Address)?.Redraw();
+			}
+		}
 	}
 }
