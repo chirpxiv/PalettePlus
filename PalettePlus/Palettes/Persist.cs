@@ -7,7 +7,7 @@ using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 using PalettePlus.Services;
 using PalettePlus.Extensions;
-using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
+using Dalamud.Logging;
 
 namespace PalettePlus.Palettes {
 	public class Persist {
@@ -19,21 +19,37 @@ namespace PalettePlus.Palettes {
 		public unsafe bool IsApplicableTo(GameObject obj) {
 			if (!obj.IsValidForPalette()) return false;
 
-			var match = Character == obj.Name.ToString();
+			var name = obj.Name.ToString();
+			var match = !string.IsNullOrEmpty(name) && Character == name;
 			if (match && !string.IsNullOrEmpty(CharaWorld) && obj is PlayerCharacter chara) {
-				if (chara.HomeWorld.GameData != null)
-					match &= CharaWorld == chara.HomeWorld.GameData.Name;
+				var world = chara.HomeWorld.GameData;
+
+				if (chara.ObjectIndex > 200) {
+					var ovw = (PlayerCharacter?)PluginServices.ObjectTable.FirstOrDefault(ch => ch.ObjectIndex < 200 && ch is PlayerCharacter && ch.Name.ToString() == name);
+					if (ovw != null) world = ovw.HomeWorld.GameData;
+				}
+
+				if (world != null)
+					match &= CharaWorld == world.Name;
 			}
 			return match;
 		}
 
 		public GameObject? FindTargetActor() {
+			GameObject? result = null;
+
 			foreach (var obj in PluginServices.ObjectTable) {
-				if (IsApplicableTo(obj))
-					return obj;
+				if (obj.ObjectIndex < 200) {
+					if (result == null && IsApplicableTo(obj))
+						result = obj;
+					else continue;
+				} else if (IsApplicableTo(obj)) {
+					result = obj;
+					break;
+				}
 			}
 
-			return null;
+			return result;
 		}
 
 		public unsafe void RedrawTargetActor() {

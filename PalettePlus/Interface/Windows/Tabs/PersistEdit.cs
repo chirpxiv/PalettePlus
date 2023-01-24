@@ -55,8 +55,11 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			if (add) {
 				ImGui.BeginDisabled(string.IsNullOrEmpty(Persist.Character) || string.IsNullOrEmpty(Persist.PaletteId));
 				if (ImGuiComponents.IconButton(PersistIndex, FontAwesomeIcon.Plus)) {
-					PalettePlus.Config.Persistence.Add(persist);
 					Persist = new();
+					PalettePlus.Config.Persistence.Add(persist);
+
+					add = false;
+					redraw = true;
 				}
 				ImGui.EndDisabled();
 			} else {
@@ -89,6 +92,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 
 			ImGui.NextColumn();
 			if (!add && ImGuiComponents.IconButton(PersistIndex, FontAwesomeIcon.Trash)) {
+				redraw = true;
 				PalettePlus.Config.Persistence.Remove(persist);
 			}
 
