@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Dalamud.Game.ClientState.Objects.Types;
 
@@ -19,18 +18,21 @@ namespace PalettePlus.Extensions {
 		}
 
 		internal static List<Palette> GetPersists(this GameObject actor) {
-			var result = new List<Palette>();
+			var results = new List<Palette>();
 
-			var name = actor.Name.ToString();
 			foreach (var persist in PalettePlus.Config.Persistence) {
-				if (persist.Character == name) {
-					var palette = PalettePlus.Config.SavedPalettes.FirstOrDefault(p => p.Name == persist.PaletteId);
-					if (palette != null)
-						result.Add(palette);
-				}
+				if (!persist.Enabled || !persist.IsApplicableTo(actor)) continue;
+
+				var palette = persist.FindPalette();
+				if (palette != null) results.Add(palette);
 			}
 
-			return result;
+			return results;
+		}
+
+		internal unsafe static bool IsValidForPalette(this GameObject obj) {
+			var actor = (Actor*)obj.Address;
+			return !(actor == null || actor->ModelId != 0 || actor->GetModel() == null);
 		}
 	}
 }

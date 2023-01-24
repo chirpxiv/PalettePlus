@@ -16,18 +16,21 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			var scale = ImGuiHelpers.GlobalScale;
 
 			var button = 30 + (5 * scale);
-			var input = (ImGui.GetContentRegionAvail().X - (button * 2)) / 2;
+			var input = (ImGui.GetContentRegionAvail().X - (button * 2));
 
 			ImGui.Separator();
 
 			ImGui.Columns(4);
 			ImGui.SetColumnWidth(0, button);
-			ImGui.SetColumnWidth(1, input);
-			ImGui.SetColumnWidth(2, input + 10);
-			ImGui.SetColumnWidth(0, button);
+			ImGui.SetColumnWidth(1, input * 2/3);
+			ImGui.SetColumnWidth(2, input * 1/3);
+			ImGui.SetColumnWidth(3, button);
 
 			ImGui.NextColumn();
 			ImGui.Text("Character");
+			ImGui.SameLine();
+			ImGui.SetCursorPosX(ImGui.GetItemRectMin().X + ImGui.GetStyle().FramePadding.X + ImGui.GetContentRegionAvail().X * 2/3);
+			ImGui.Text("World (Optional)");
 			ImGui.NextColumn();
 			ImGui.Text("Palette");
 			ImGui.NextColumn();
@@ -56,8 +59,16 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			}
 
 			ImGui.NextColumn();
-			ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
+			var avail = ImGui.GetContentRegionAvail().X;
+			ImGui.SetNextItemWidth(avail * 2/3);
 			ImGui.InputTextWithHint($"##PersistCharaName{PersistIndex}", "Enter character name...", ref persist.Character, 50);
+
+			ImGui.SameLine();
+
+			ImGui.SetCursorPosX(ImGui.GetCursorPosX() - ImGui.GetStyle().FramePadding.X);
+
+			ImGui.SetNextItemWidth(avail * 1/3);
+			ImGui.InputTextWithHint($"##PersistWorld{PersistIndex}", "Enter world...", ref persist.CharaWorld, 50);
 
 			ImGui.NextColumn();
 			ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);

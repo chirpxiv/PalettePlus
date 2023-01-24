@@ -61,19 +61,14 @@ namespace PalettePlus.Interop {
 
 			if (isNew) {
 				var obj = PluginServices.ObjectTable.CreateObjectReference((nint)a1);
-				if (obj != null && obj.Name != null && ((Actor*)a1)->ModelId == 0) {
-					var palettes = obj.GetPersists();
-					foreach (var palette in palettes)
-						palette.Apply(obj);
+				if (obj != null && obj.IsValidForPalette()) {
+					var persists = obj.GetPersists();
+					foreach (var persist in persists)
+						persist.Apply(obj);
 				}
 			}
 
 			return exec;
 		}
-
-		/*internal unsafe static IntPtr UpdateColorsDetour(Model* model) {
-			var exec = UpdateColorsHook.Original(model);
-			return exec;
-		}*/
 	}
 }
