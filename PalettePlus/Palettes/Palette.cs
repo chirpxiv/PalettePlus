@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Linq;
 using System.Reflection;
 using System.Collections.Generic;
@@ -103,6 +104,10 @@ namespace PalettePlus.Palettes {
 		public string ToJson() => JsonConvert.SerializeObject(this);
 
 		public static Palette FromJson(string json) => JsonConvert.DeserializeObject<Palette>(json)!;
+
+		public override string ToString() => Convert.ToBase64String(Encoding.UTF8.GetBytes(ToJson()));
+
+		public static Palette FromString(string text) => FromJson(Encoding.UTF8.GetString(Convert.FromBase64String(text)));
 	}
 
 	[Flags]

@@ -7,6 +7,11 @@ using PalettePlus.Palettes;
 using PalettePlus.Extensions;
 
 namespace PalettePlus.Services {
+	public enum ApplyOrder {
+		PersistFirst,
+		StoredFirst // Use when redrawing.
+	}
+
 	public static class PaletteService {
 		// Shader params
 
@@ -36,15 +41,43 @@ namespace PalettePlus.Services {
 
 		internal static Dictionary<Character, Palette> ActivePalettes = new();
 
-		public static Palette GetCharaPalette(Character chara) {
+		public static Palette GetCharaPalette(Character chara, ApplyOrder order = ApplyOrder.PersistFirst) {
 			if (chara.ObjectIndex > 200) {
 				var ovw = chara.FindOverworldEquiv();
 				if (ovw != null && ovw is Character ovwChara) chara = ovwChara;
 			}
 
-			var active = new Palette();
+			Palette? persists = null;
+			foreach (var persist in chara.GetPersists()) {
+				if (persists == null)
+					persists = persist;
+				else
+					persists.Add(persist);
+			}
 
-			var persists = chara.GetPersists();
+			if (!ActivePalettes.TryGetValue(chara, out var stored))
+				BuildCharaPalette(chara, out stored, out _);
+
+			switch (order) {
+				case ApplyOrder.PersistFirst:
+					if (persists == null)
+						persists = stored;
+					else
+						persists.Add(stored);
+					return persists;
+				case ApplyOrder.StoredFirst:
+					if (persists != null)
+						stored.Add(persists);
+					return stored;
+				default:
+					return stored;
+			}
+
+			//var result = 
+
+			//var active = new Palette();
+
+			/*var persists = chara.GetPersists();
 
 			foreach (var persist in persists)
 				active.Add(persist);
@@ -57,9 +90,9 @@ namespace PalettePlus.Services {
 
 			active.Add(baseVals);
 
-			if (add) ActivePalettes[chara] = active;
+			if (add) ActivePalettes[chara] = active;*/
 
-			return active;
+			//return active;
 		}
 
 		public static void SetCharaPalette(Character chara, Palette palette) {
