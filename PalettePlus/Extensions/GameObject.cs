@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 
 using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Game.ClientState.Objects.SubKinds;
+
+using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 using PalettePlus.Interop;
 using PalettePlus.Structs;
@@ -11,7 +12,7 @@ using PalettePlus.Services;
 
 namespace PalettePlus.Extensions {
 	internal static class GameObjectExtensions {
-		internal unsafe static ModelParams* UpdateColors(this GameObject actor) {
+		internal unsafe static ModelParams* UpdateColors(this Dalamud.Game.ClientState.Objects.Types.GameObject actor) {
 			var model = Model.GetModel(actor);
 			if (model == null) return null;
 
@@ -42,6 +43,13 @@ namespace PalettePlus.Extensions {
 			return PluginServices.ObjectTable.FirstOrDefault(
 				ch => ch.ObjectIndex < 200 && ch is Character && ch.Name.ToString() == obj.Name.ToString()
 			);
+		}
+
+		internal unsafe static void Redraw(this GameObject obj) {
+			var actor = (CSGameObject*)obj.Address;
+			if (actor == null) return;
+			actor->DisableDraw();
+			actor->EnableDraw();
 		}
 	}
 }

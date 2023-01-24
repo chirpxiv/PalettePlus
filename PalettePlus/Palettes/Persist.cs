@@ -54,10 +54,7 @@ namespace PalettePlus.Palettes {
 		public unsafe void RedrawTargetActor() {
 			var tar = FindTargetActor();
 			if (tar == null) return;
-
-			var actor = (CSGameObject*)tar.Address;
-			actor->DisableDraw();
-			actor->EnableDraw();
+			tar.Redraw();
 		}
 
 		public Palette? FindPalette() => PalettePlus.Config.SavedPalettes.FirstOrDefault(p => p.Name == PaletteId);
