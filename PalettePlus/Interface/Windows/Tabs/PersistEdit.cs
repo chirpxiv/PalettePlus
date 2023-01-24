@@ -27,9 +27,12 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.SetColumnWidth(3, button);
 
 			ImGui.NextColumn();
-			ImGui.Text("Character");
+			var pos = ImGui.GetCursorPosX();
+			var avail = ImGui.GetContentRegionAvail().X;
+			var labelChara = "Character";
+			ImGui.Text(labelChara);
 			ImGui.SameLine();
-			ImGui.SetCursorPosX(ImGui.GetItemRectMin().X + ImGui.GetStyle().FramePadding.X + ImGui.GetContentRegionAvail().X * 2/3);
+			ImGui.SetCursorPosX(pos + ImGui.GetStyle().FramePadding.X + (avail * 2/3));
 			ImGui.Text("World (Optional)");
 			ImGui.NextColumn();
 			ImGui.Text("Palette");
