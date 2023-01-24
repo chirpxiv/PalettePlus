@@ -24,7 +24,7 @@ namespace PalettePlus.Palettes {
 				var world = chara.HomeWorld.GameData;
 
 				if (chara.ObjectIndex > 200) {
-					var ovw = (PlayerCharacter?)PluginServices.ObjectTable.FirstOrDefault(ch => ch.ObjectIndex < 200 && ch is PlayerCharacter && ch.Name.ToString() == name);
+					var ovw = (PlayerCharacter?)chara.FindOverworldEquiv();
 					if (ovw != null) world = ovw.HomeWorld.GameData;
 				}
 

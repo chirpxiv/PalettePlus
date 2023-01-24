@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using PalettePlus.Structs;
+using PalettePlus.Services;
 using PalettePlus.Palettes.Attributes;
 
 namespace PalettePlus.Palettes {
@@ -33,10 +34,21 @@ namespace PalettePlus.Palettes {
 			return clone;
 		}
 
-		public unsafe void Apply(GameObject obj) {
+		public unsafe void Apply(Character obj, bool save = false) {
 			var model = Model.GetModel(obj);
 			if (model != null)
 				model->ApplyPalette(this);
+
+			if (save) {
+				var p = PaletteService.GetCharaPalette(obj);
+				p.Add(this);
+				PaletteService.SetCharaPalette(obj, p);
+			}
+		}
+
+		public void Add(Palette p) {
+			foreach (var (key, val) in p.ShaderParams)
+				ShaderParams[key] = val;
 		}
 
 		// Shader Params
@@ -90,7 +102,7 @@ namespace PalettePlus.Palettes {
 
 		public string ToJson() => JsonConvert.SerializeObject(this);
 
-		public static Palette FromJson(string json) => JsonConvert.DeserializeObject<Palette>(json);
+		public static Palette FromJson(string json) => JsonConvert.DeserializeObject<Palette>(json)!;
 	}
 
 	[Flags]

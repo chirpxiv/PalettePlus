@@ -4,9 +4,16 @@ using Dalamud.Game.ClientState.Objects.Types;
 
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
+using PalettePlus.Extensions;
 
 namespace PalettePlus.Services {
 	public static class PaletteService {
+		// Shader params
+
+		internal static ParamContainer ParamContainer = new();
+
+		// Param labels
+
 		private static Dictionary<string, string> FieldLabels = new() {
 			{ "SkinTone", "Skin Tone" },
 			{ "MuscleTone", "Muscle Tone" },
@@ -23,12 +30,54 @@ namespace PalettePlus.Services {
 			{ "FacePaintColor", "Facepaint Color" }
 		};
 
-		public static ParamContainer ParamContainer = new();
+		public static string GetLabel(string key) => FieldLabels.TryGetValue(key, out var val) ? val : key;
 
-		public static string GetLabel(string key)
-			=> FieldLabels.TryGetValue(key, out var val) ? val : key;
+		// Palettes
 
-		public unsafe static void GetCharaPalette(GameObject obj, out Palette palette, out Palette basePalette, bool contain = false) {
+		internal static Dictionary<Character, Palette> ActivePalettes = new();
+
+		public static Palette GetCharaPalette(Character chara) {
+			if (chara.ObjectIndex > 200) {
+				var ovw = chara.FindOverworldEquiv();
+				if (ovw != null && ovw is Character ovwChara) chara = ovwChara;
+			}
+
+			var active = new Palette();
+
+			var persists = chara.GetPersists();
+
+			foreach (var persist in persists)
+				active.Add(persist);
+
+			var add = false;
+			if (!ActivePalettes.TryGetValue(chara, out var baseVals)) {
+				add = true;
+				BuildCharaPalette(chara, out baseVals, out _);
+			}
+
+			active.Add(baseVals);
+
+			if (add) ActivePalettes[chara] = active;
+
+			return active;
+		}
+
+		public static void SetCharaPalette(Character chara, Palette palette) {
+			if (chara.ObjectIndex > 200) {
+				var ovw = chara.FindOverworldEquiv();
+				if (ovw != null && ovw is Character ovwChara) {
+					chara = ovwChara;
+					palette.Apply(chara);
+				}
+			}
+
+			ActivePalettes[chara] = palette;
+		}
+
+		public static void RemoveCharaPalette(Character chara)
+			=> ActivePalettes.Remove(chara);
+
+		public unsafe static void BuildCharaPalette(GameObject obj, out Palette palette, out Palette basePalette, bool contain = false) {
 			palette = new();
 			basePalette = new();
 
@@ -36,8 +85,6 @@ namespace PalettePlus.Services {
 			if (model == null) return;
 
 			// TODO: Refactor
-
-			palette.ShaderParams.Clear();
 
 			var mP = model->GetModelParams();
 			if (mP != null)

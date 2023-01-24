@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
+using System.Collections.Generic;
 
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 
 using PalettePlus.Interop;
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
+using PalettePlus.Services;
 
 namespace PalettePlus.Extensions {
 	internal static class GameObjectExtensions {
@@ -33,6 +36,12 @@ namespace PalettePlus.Extensions {
 		internal unsafe static bool IsValidForPalette(this GameObject obj) {
 			var actor = (Actor*)obj.Address;
 			return !(actor == null || actor->ModelId != 0 || actor->GetModel() == null);
+		}
+
+		internal static GameObject? FindOverworldEquiv(this GameObject obj) {
+			return PluginServices.ObjectTable.FirstOrDefault(
+				ch => ch.ObjectIndex < 200 && ch is Character && ch.Name.ToString() == obj.Name.ToString()
+			);
 		}
 	}
 }

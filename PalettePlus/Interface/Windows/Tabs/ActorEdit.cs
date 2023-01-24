@@ -58,9 +58,12 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.SameLine();
 
 			if (ImGui.Button("Reset")) {
+				PaletteService.RemoveCharaPalette(actor);
+
 				Palette.ShaderParams.Clear();
+
 				actor.UpdateColors();
-				PaletteService.GetCharaPalette(actor, out Palette, out DefaultPalette);
+				PaletteService.BuildCharaPalette(actor, out Palette, out DefaultPalette);
 			}
 
 			var model = Model.GetModel(actor);
@@ -71,49 +74,23 @@ namespace PalettePlus.Interface.Windows.Tabs {
 				if (PaletteEditor.Draw(DefaultPalette, ref Palette, ref ParamContainer)) {
 					*model->ModelShader->ModelParams = ParamContainer.Model;
 					*model->DecalShader->DecalParams = ParamContainer.Decal;
+
+					PaletteService.SetCharaPalette(actor, (Palette)Palette.Clone());
 				}
 			}
 		}
 
-		private unsafe void SelectActor(GameObject? obj) {
+		private unsafe void SelectActor(Character? obj) {
 			if (obj == null)
 				obj = PluginServices.ClientState.LocalPlayer;
 
+			if (obj != null && !obj.IsValidForPalette())
+				obj = null;
+
 			ActorList.Selected = obj;
 
-			// Reconstruct Palette for charas previously modified.
-			// This is hacky but it works fine for now.
-
 			if (obj != null)
-				GetCharaPalette(obj);
-		}
-
-		private unsafe void GetCharaPalette(GameObject obj, bool contain = false) {
-			var model = Model.GetModel(obj);
-			var color = model != null ? model->GetModelParams() : null;
-			if (color == null) return;
-
-			// TODO: Refactor
-
-			Palette.ShaderParams.Clear();
-
-			Palette.CopyShaderParams(*color);
-
-			var decal = model->GetDecalParams();
-			if (decal != null)
-				Palette.CopyShaderParams(*decal);
-
-			DefaultPalette = new Palette();
-
-			var vals = model->GenerateColorValues();
-			DefaultPalette.CopyShaderParams(vals.Model);
-			DefaultPalette.CopyShaderParams(vals.Decal);
-			ParamContainer = vals;
-
-			foreach (var (key, value) in Palette.ShaderParams) {
-				if (value.Equals(DefaultPalette.ShaderParams[key]))
-					Palette.ShaderParams.Remove(key);
-			}
+				PaletteService.BuildCharaPalette(obj, out Palette, out DefaultPalette, true);
 		}
 	}
 }

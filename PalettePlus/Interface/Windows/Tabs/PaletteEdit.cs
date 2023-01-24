@@ -1,5 +1,7 @@
 ﻿using ImGuiNET;
 
+using Dalamud.Game.ClientState.Objects.Types;
+
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Services;
@@ -18,7 +20,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			if (select || firstFrame) {
 				var local = PluginServices.ClientState.LocalPlayer;
 				if (local != null)
-					PaletteService.GetCharaPalette(local, out var _, out DefaultPalette, true);
+					PaletteService.BuildCharaPalette(local, out var _, out DefaultPalette, true);
 
 				if (PaletteList.Selected != null) {
 					var model = (object)PaletteService.ParamContainer.Model;
@@ -38,8 +40,8 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			if (PaletteList.Selected != null) {
 				if (ImGui.Button("Apply to Self")) {
 					var self = PluginServices.ObjectTable[201] ?? PluginServices.ClientState.LocalPlayer;
-					if (self != null)
-						PaletteList.Selected.Apply(self);
+					if (self != null && self is Character chara)
+						PaletteList.Selected.Apply(chara, true);
 				}
 
 				ImGui.SameLine();
@@ -49,7 +51,8 @@ namespace PalettePlus.Interface.Windows.Tabs {
 				ImGui.BeginDisabled(tar == null);
 				if (ImGui.Button("Apply to Target") && tar != null) {
 					var obj = PluginServices.ObjectTable.CreateObjectReference((nint)tar);
-					if (obj != null) PaletteList.Selected.Apply(obj);
+					if (obj != null && obj is Character chara)
+						PaletteList.Selected.Apply(chara, true);
 				}
 				ImGui.EndDisabled();
 

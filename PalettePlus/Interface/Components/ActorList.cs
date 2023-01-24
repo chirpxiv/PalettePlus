@@ -16,11 +16,11 @@ namespace PalettePlus.Interface.Components {
 		private string SearchString = "";
 		private Dictionary<string, ActorContainer> ActorNames = new();
 
-		internal GameObject? Selected = null;
+		internal Character? Selected = null;
 
 		// Draw
 
-		internal void Draw(Action<GameObject?> callback) {
+		internal void Draw(Action<Character?> callback) {
 			var width = Math.Min(ImGui.GetWindowSize().X * 1 / 3, 400);
 
 			ImGui.BeginGroup();
@@ -35,13 +35,13 @@ namespace PalettePlus.Interface.Components {
 			ImGui.EndGroup();
 		}
 
-		private void DrawList(Action<GameObject?> callback) {
+		private void DrawList(Action<Character?> callback) {
 			ActorNames.Clear();
 
 			bool isSelectionValid = false;
 			for (var i = 0; i < GPoseStartIndex + 200; i++) {
-				var actor = PluginServices.ObjectTable[i];
-				if (actor == null) continue;
+				var obj = PluginServices.ObjectTable[i];
+				if (obj == null || obj is not Character actor) continue;
 
 				unsafe {
 					// TODO: ClientStructs PR
@@ -83,7 +83,8 @@ namespace PalettePlus.Interface.Components {
 			var searchString = SearchString.ToLower();
 
 			foreach (var (name, cont) in ActorNames) {
-				var actor = cont.GameObject;
+				var obj = cont.GameObject;
+				if (obj is not Character actor) continue;
 
 				var label = name;
 				if (cont.IsGPoseActor)
