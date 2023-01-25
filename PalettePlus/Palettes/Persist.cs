@@ -5,6 +5,7 @@ using Dalamud.Game.ClientState.Objects.SubKinds;
 
 using PalettePlus.Services;
 using PalettePlus.Extensions;
+using System.Runtime.Remoting;
 
 namespace PalettePlus.Palettes {
 	public class Persist {
@@ -21,7 +22,7 @@ namespace PalettePlus.Palettes {
 			if (match && !string.IsNullOrEmpty(CharaWorld) && obj is PlayerCharacter chara) {
 				var world = chara.HomeWorld.GameData;
 
-				if (chara.ObjectIndex > 200) {
+				if (chara.ObjectIndex > 200 && chara.ObjectIndex < 241) {
 					var ovw = (PlayerCharacter?)chara.FindOverworldEquiv();
 					if (ovw != null) world = ovw.HomeWorld.GameData;
 				}

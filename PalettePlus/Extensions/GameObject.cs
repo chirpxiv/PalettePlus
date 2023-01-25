@@ -9,6 +9,8 @@ using PalettePlus.Interop;
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Services;
+using Dalamud.Game.ClientState.Objects.SubKinds;
+using System.Text.RegularExpressions;
 
 namespace PalettePlus.Extensions {
 	internal static class GameObjectExtensions {
@@ -50,6 +52,22 @@ namespace PalettePlus.Extensions {
 			if (actor == null) return;
 			actor->DisableDraw();
 			actor->EnableDraw();
+		}
+
+		internal static (string,string) GetNameAndWorld(this Character chara) {
+			var worldName = "";
+			if (chara is PlayerCharacter pc) {
+				var world = pc.HomeWorld.GameData;
+				if (chara.ObjectIndex > 200 && chara.ObjectIndex < 241) {
+					var ovw = (PlayerCharacter?)chara.FindOverworldEquiv();
+					if (ovw != null) world = ovw.HomeWorld.GameData;
+				}
+
+				if (world != null)
+					worldName = world.Name;
+			}
+
+			return (chara.Name.ToString(), worldName);
 		}
 	}
 }

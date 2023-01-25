@@ -7,6 +7,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Extensions;
+using System.Linq;
 
 namespace PalettePlus.Services {
 	public enum ApplyOrder {
@@ -41,7 +42,7 @@ namespace PalettePlus.Services {
 
 		// Palettes
 
-		internal static Dictionary<Character, Palette> ActivePalettes = new();
+		internal static Dictionary<(string, string), Palette> ActivePalettes = new();
 
 		public static Palette GetCharaPalette(Character chara, ApplyOrder order = ApplyOrder.PersistFirst) {
 			if (chara.ObjectIndex > 200 && chara.ObjectIndex < 240) {
@@ -49,12 +50,14 @@ namespace PalettePlus.Services {
 				if (ovw != null && ovw is Character ovwChara) chara = ovwChara;
 			}
 
+			var key = chara.GetNameAndWorld();
+
 			Palette? persists = null;
 			foreach (var persist in chara.GetPersists())
 				persists = persists == null ? persist : persists.Add(persist);
 
 			var store = false;
-			if (!ActivePalettes.TryGetValue(chara, out var stored)) {
+			if (!ActivePalettes.TryGetValue(key, out var stored)) {
 				store = true;
 				BuildCharaPalette(chara, out stored, out _);
 			}
@@ -72,7 +75,7 @@ namespace PalettePlus.Services {
 					break;
 			}
 
-			if (store) ActivePalettes[chara] = result;
+			if (store) ActivePalettes[key] = result;
 
 			return result;
 		}
@@ -85,11 +88,11 @@ namespace PalettePlus.Services {
 			}
 
 			palette.Apply(chara);
-			ActivePalettes[chara] = palette;
+			ActivePalettes[chara.GetNameAndWorld()] = palette;
 		}
 
 		public static void RemoveCharaPalette(Character chara)
-			=> ActivePalettes.Remove(chara);
+			=> ActivePalettes.Remove(chara.GetNameAndWorld());
 
 		public unsafe static void BuildCharaPalette(GameObject obj, out Palette palette, out Palette basePalette, bool contain = false) {
 			palette = new();
@@ -120,13 +123,19 @@ namespace PalettePlus.Services {
 		}
 
 		public unsafe static void RedrawActivePalettes() {
-			foreach (GameObject chara in ActivePalettes.Keys) {
+			foreach ((string,string) key in ActivePalettes.Keys) {
 				try {
+					var chara = PluginServices.ObjectTable.FirstOrDefault(a => {
+						if (a is Character chara)
+							return chara.GetNameAndWorld() == key;
+						return false;
+					});
+
 					// could not actually find a good way to verify validity here.
-					if (chara.Address != IntPtr.Zero && chara.IsValid())
+					if (chara != null && chara.Address != IntPtr.Zero && chara.IsValid())
 						chara.Redraw();
 				} catch (Exception e) {
-					PluginLog.Error($"Failed to redraw actor: {chara}", e);
+					PluginLog.Error($"Failed to redraw actor: {key}", e);
 				}
 			}
 		}
