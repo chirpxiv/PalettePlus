@@ -9,6 +9,7 @@ using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 using PalettePlus.Structs;
 using PalettePlus.Services;
 using PalettePlus.Extensions;
+using Dalamud.Logging;
 
 namespace PalettePlus.Interop {
 	internal static class Hooks {
@@ -54,13 +55,15 @@ namespace PalettePlus.Interop {
 		}
 
 		internal unsafe static nint EnableDrawDetour(CSGameObject* a1) {
-			var c1 = (*(byte*)((nint)a1 + 149) & 0x40) != 0;
+			var c1 = ((byte)a1->TargetableStatus & 0x40) != 0;
 			var c2 = (a1->RenderFlags & 0x2000000) == 0;
 			var isNew = !(c1 && c2);
 
 			var exec = EnableDrawHook.Original(a1);
 
 			if (isNew) {
+				PluginLog.Information("called");
+
 				var obj = PluginServices.ObjectTable.CreateObjectReference((nint)a1);
 				if (obj != null && obj is Character chara && obj.IsValidForPalette()) {
 					var palette = PaletteService.GetCharaPalette(chara, ApplyOrder.StoredFirst);

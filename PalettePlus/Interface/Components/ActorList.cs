@@ -39,7 +39,7 @@ namespace PalettePlus.Interface.Components {
 			ActorNames.Clear();
 
 			bool isSelectionValid = false;
-			for (var i = 0; i < GPoseStartIndex + 200; i++) {
+			for (var i = 0; i < GPoseStartIndex + 40; i++) {
 				var obj = PluginServices.ObjectTable[i];
 				if (obj == null || obj is not Character actor) continue;
 
