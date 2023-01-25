@@ -46,5 +46,7 @@ namespace PalettePlus.Interface.Windows {
 				ImGui.EndTabItem();
 			}
 		}
+
+		public override void OnClose() => PalettePlus.Config.Save();
 	}
 }
