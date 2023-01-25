@@ -66,6 +66,7 @@ namespace PalettePlus {
 		private void OnLogoutEvent(object? sender, object _) {
 			PluginLog.Verbose("OnLogoutEvent fired, clearing active palettes.");
 			PaletteService.ActivePalettes.Clear();
+			Hooks.ActorCopy.Clear();
 		}
 
 		internal static string GetVersion()

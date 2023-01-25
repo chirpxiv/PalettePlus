@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Dalamud.Logging;
@@ -7,7 +8,6 @@ using Dalamud.Game.ClientState.Objects.Types;
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Extensions;
-using System.Linq;
 
 namespace PalettePlus.Services {
 	public enum ApplyOrder {
@@ -45,17 +45,12 @@ namespace PalettePlus.Services {
 		internal static Dictionary<(string, string), Palette> ActivePalettes = new();
 
 		public static Palette GetCharaPalette(Character chara, ApplyOrder order = ApplyOrder.PersistFirst) {
-			if (chara.ObjectIndex > 200 && chara.ObjectIndex < 240) {
+			if (chara.ObjectIndex >= 200 && chara.ObjectIndex < 240) {
 				var ovw = chara.FindOverworldEquiv();
 				if (ovw != null && ovw is Character ovwChara) chara = ovwChara;
 			}
 
 			var key = chara.GetNameAndWorld();
-			if (chara.ObjectIndex == 200) {
-				var local = PluginServices.ClientState.LocalPlayer;
-				if (local != null)
-					key = local.GetNameAndWorld();
-			}
 
 			Palette? persists = null;
 			foreach (var persist in chara.GetPersists())
@@ -86,7 +81,7 @@ namespace PalettePlus.Services {
 		}
 
 		public static void SetCharaPalette(Character chara, Palette palette) {
-			if (chara.ObjectIndex > 200 && chara.ObjectIndex < 240) {
+			if (chara.ObjectIndex >= 200 && chara.ObjectIndex < 240) {
 				var ovw = chara.FindOverworldEquiv();
 				if (ovw != null && ovw is Character ovwChara)
 					chara = ovwChara;
@@ -137,9 +132,7 @@ namespace PalettePlus.Services {
 						return false;
 					});
 
-					// could not actually find a good way to verify validity here.
-					if (chara != null && chara.Address != IntPtr.Zero && chara.IsValid())
-						chara.Redraw();
+					if (chara != null) chara.Redraw();
 				} catch (Exception e) {
 					PluginLog.Error($"Failed to redraw actor: {key}", e);
 				}

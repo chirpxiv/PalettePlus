@@ -11,7 +11,6 @@ using PalettePlus.Interop;
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Services;
-using Dalamud.Logging;
 
 namespace PalettePlus.Extensions {
 	internal static class GameObjectExtensions {
@@ -51,11 +50,8 @@ namespace PalettePlus.Extensions {
 			return true;
 		}
 
-		internal static GameObject? FindOverworldEquiv(this GameObject obj) {
-			return PluginServices.ObjectTable.FirstOrDefault(
-				ch => ch.ObjectIndex < 200 && ch is Character && ch.Name.ToString() == obj.Name.ToString()
-			);
-		}
+		internal unsafe static GameObject? FindOverworldEquiv(this GameObject obj)
+			=> PluginServices.ObjectTable.FirstOrDefault(ch => ch.ObjectIndex < 200 && ch is Character && ch.Name.ToString() == obj.Name.ToString());
 
 		internal unsafe static void Redraw(this GameObject obj) {
 			var actor = (CSGameObject*)obj.Address;
@@ -68,7 +64,7 @@ namespace PalettePlus.Extensions {
 			var worldName = "";
 			if (chara is PlayerCharacter pc) {
 				var world = pc.HomeWorld.GameData;
-				if (chara.ObjectIndex > 200 && chara.ObjectIndex < 241) {
+				if (chara.ObjectIndex >= 200 && chara.ObjectIndex < 240) {
 					var ovw = (PlayerCharacter?)chara.FindOverworldEquiv();
 					if (ovw != null) world = ovw.HomeWorld.GameData;
 				}
