@@ -4,6 +4,7 @@ using Dalamud.Interface;
 using Dalamud.Interface.Components;
 
 using PalettePlus.Palettes;
+using PalettePlus.Extensions;
 using PalettePlus.Interface.Components;
 
 namespace PalettePlus.Interface.Windows.Tabs {
@@ -50,9 +51,12 @@ namespace PalettePlus.Interface.Windows.Tabs {
 
 		private void DrawRow(Persist persist, bool add = false) {
 			var redraw = false;
+			var validCharacter = persist.Character.Split(' ').Length == 2;
+			var validWorld = string.IsNullOrEmpty(persist.CharaWorld) || persist.CharaWorld.Split(' ').Length == 1;
+			var validPalette = !string.IsNullOrEmpty(persist.PaletteId);
 
 			if (add) {
-				ImGui.BeginDisabled(string.IsNullOrEmpty(Persist.Character) || string.IsNullOrEmpty(Persist.PaletteId));
+				ImGui.BeginDisabled(!validPalette || !validCharacter || !validWorld);
 				if (ImGuiComponents.IconButton(PersistIndex, FontAwesomeIcon.Plus)) {
 					Persist = new();
 					PalettePlus.Config.Persistence.Add(persist);
@@ -69,7 +73,10 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.NextColumn();
 			var avail = ImGui.GetContentRegionAvail().X;
 			ImGui.SetNextItemWidth(avail * 2/3);
-			ImGui.InputTextWithHint($"##PersistCharaName{PersistIndex}", "Enter character name...", ref persist.Character, 50);
+			if(ImGui.InputTextWithHint($"##PersistCharaName{PersistIndex}", "Enter character name...", ref persist.Character, 50))
+			{
+				persist.Character = persist.Character.TrimAndSquash().CapitalizeEach();
+			}
 			redraw |= ImGui.IsItemDeactivatedAfterEdit();
 
 			ImGui.SameLine();
@@ -77,7 +84,10 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.SetCursorPosX(ImGui.GetCursorPosX() - ImGui.GetStyle().FramePadding.X);
 
 			ImGui.SetNextItemWidth(avail * 1/3);
-			ImGui.InputTextWithHint($"##PersistWorld{PersistIndex}", "Enter world...", ref persist.CharaWorld, 50);
+			if(ImGui.InputTextWithHint($"##PersistWorld{PersistIndex}", "Enter world...", ref persist.CharaWorld, 50))
+			{
+				persist.CharaWorld = persist.CharaWorld.TrimAndSquash().CapitalizeEach();
+			}
 			redraw |= ImGui.IsItemDeactivatedAfterEdit();
 
 			ImGui.NextColumn();
