@@ -5,7 +5,6 @@ using Dalamud.Game.ClientState.Objects.SubKinds;
 
 using PalettePlus.Services;
 using PalettePlus.Extensions;
-using System.Runtime.Remoting;
 
 namespace PalettePlus.Palettes {
 	public class Persist {

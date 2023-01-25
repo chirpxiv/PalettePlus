@@ -5,13 +5,13 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 
+using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 using PalettePlus.Interop;
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Services;
-using Dalamud.Logging;
 
 namespace PalettePlus.Extensions {
 	internal static class GameObjectExtensions {
@@ -40,22 +40,19 @@ namespace PalettePlus.Extensions {
 		internal unsafe static bool IsValidForPalette(this GameObject obj) {
 			var actor = (Actor*)obj.Address;
 
-			if (obj is not Character) return false;
+			if (obj is not Character || obj.ObjectKind == ObjectKind.EventNpc) return false;
 
-			var isValid = actor != null && actor->ModelId == 0 && actor->GetModel() != null;
-			if (!isValid) return false;
+			if (actor == null || actor->ModelId != 0) return false;
 
-			if (obj.ObjectKind == ObjectKind.EventNpc)
+			var model = (DrawObject*)actor->GetModel();
+			if (model == null || model->Object.GetObjectType() != ObjectType.CharacterBase || ((CharacterBase*)model)->GetModelType() != CharacterBase.ModelType.Human)
 				return false;
 
 			return true;
 		}
 
-		internal static GameObject? FindOverworldEquiv(this GameObject obj) {
-			return PluginServices.ObjectTable.FirstOrDefault(
-				ch => ch.ObjectIndex < 200 && ch is Character && ch.Name.ToString() == obj.Name.ToString()
-			);
-		}
+		internal unsafe static GameObject? FindOverworldEquiv(this GameObject obj)
+			=> PluginServices.ObjectTable.FirstOrDefault(ch => ch.ObjectIndex < 200 && ch is Character && ch.Name.ToString() == obj.Name.ToString());
 
 		internal unsafe static void Redraw(this GameObject obj) {
 			var actor = (CSGameObject*)obj.Address;
@@ -68,7 +65,7 @@ namespace PalettePlus.Extensions {
 			var worldName = "";
 			if (chara is PlayerCharacter pc) {
 				var world = pc.HomeWorld.GameData;
-				if (chara.ObjectIndex > 200 && chara.ObjectIndex < 241) {
+				if (chara.ObjectIndex >= 200 && chara.ObjectIndex < 240) {
 					var ovw = (PlayerCharacter?)chara.FindOverworldEquiv();
 					if (ovw != null) world = ovw.HomeWorld.GameData;
 				}
