@@ -15,6 +15,7 @@ namespace PalettePlus.Services {
 		[PluginService] internal static ObjectTable ObjectTable { get; set; } = null!;
 		[PluginService] internal static ClientState ClientState { get; set; } = null!;
 		[PluginService] internal static SigScanner SigScanner { get; set; } = null!;
+		[PluginService] internal static Framework Framework { get; set; } = null!;
 
 		internal unsafe static TargetSystem* Targets = TargetSystem.Instance();
 

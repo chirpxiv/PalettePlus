@@ -55,23 +55,34 @@ namespace PalettePlus.Services {
 					persists.Add(persist);
 			}
 
-			if (!ActivePalettes.TryGetValue(chara, out var stored))
+			var store = false;
+			if (!ActivePalettes.TryGetValue(chara, out var stored)) {
+				store = true;
 				BuildCharaPalette(chara, out stored, out _);
+			}
 
+			Palette result;
 			switch (order) {
 				case ApplyOrder.PersistFirst:
 					if (persists == null)
 						persists = stored;
 					else
 						persists.Add(stored);
-					return persists;
+					result = persists;
+					break;
 				case ApplyOrder.StoredFirst:
 					if (persists != null)
 						stored.Add(persists);
-					return stored;
+					result = stored;
+					break;
 				default:
-					return stored;
+					result = stored;
+					break;
 			}
+
+			if (store) ActivePalettes[chara] = result;
+
+			return result;
 		}
 
 		public static void SetCharaPalette(Character chara, Palette palette) {
@@ -116,12 +127,9 @@ namespace PalettePlus.Services {
 			}
 		}
 
-		public static void RedrawActivePalettes()
-		{
-			foreach (var palette in ActivePalettes.Keys)
-			{
-				PluginServices.ObjectTable.CreateObjectReference(palette.Address)?.Redraw();
-			}
+		public unsafe static void RedrawActivePalettes() {
+			foreach (var chara in ActivePalettes.Keys)
+				chara.Redraw();
 		}
 	}
 }

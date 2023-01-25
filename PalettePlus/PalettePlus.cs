@@ -31,12 +31,18 @@ namespace PalettePlus {
 			PluginServices.CommandManager.AddHandler(CommandName, new CommandInfo(OnCommand) {
 				HelpMessage = "Show the Palette+ window."
 			});
+
+			PluginServices.Framework.RunOnFrameworkThread(() => {
+				foreach (var persist in Config.Persistence)
+					persist.RedrawTargetActor();
+			});
 		}
 
 		public void Dispose() {
 			IpcProvider.Dispose();
 
 			Hooks.Dispose();
+
 			PaletteService.RedrawActivePalettes();
 
 			PluginServices.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;
