@@ -77,8 +77,8 @@ namespace PalettePlus.Interop {
 			return palette.ToString();
 		}
 
-		internal static void PaletteChanged(Character character, Palette palette) {
-			IPaletteChanged?.SendMessage(character, palette.ToString());
+		internal static void PaletteChanged(Character character, Palette? palette) {
+			IPaletteChanged?.SendMessage(character, palette == null ? string.Empty : palette.ToString());
 		}
 
 	}

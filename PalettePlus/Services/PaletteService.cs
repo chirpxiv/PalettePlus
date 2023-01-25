@@ -8,6 +8,7 @@ using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Extensions;
 using System.Linq;
+using PalettePlus.Interop;
 
 namespace PalettePlus.Services {
 	public enum ApplyOrder {
@@ -97,8 +98,11 @@ namespace PalettePlus.Services {
 			PluginLog.Information($"Set {chara.GetNameAndWorld()}");
 		}
 
-		public static void RemoveCharaPalette(Character chara)
-			=> ActivePalettes.Remove(chara.GetNameAndWorld());
+		public static void RemoveCharaPalette(Character chara) {
+			if (ActivePalettes.Remove(chara.GetNameAndWorld())) {
+				IpcProvider.PaletteChanged(chara, null);
+			}
+		}
 
 		public unsafe static void BuildCharaPalette(GameObject obj, out Palette palette, out Palette basePalette, bool contain = false) {
 			palette = new();
