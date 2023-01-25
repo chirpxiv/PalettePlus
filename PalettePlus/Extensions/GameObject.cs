@@ -5,6 +5,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 
+using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
 using PalettePlus.Interop;
@@ -39,12 +40,12 @@ namespace PalettePlus.Extensions {
 		internal unsafe static bool IsValidForPalette(this GameObject obj) {
 			var actor = (Actor*)obj.Address;
 
-			if (obj is not Character) return false;
+			if (obj is not Character || obj.ObjectKind == ObjectKind.EventNpc) return false;
 
-			var isValid = actor != null && actor->ModelId == 0 && actor->GetModel() != null;
-			if (!isValid) return false;
+			if (actor == null || actor->ModelId != 0) return false;
 
-			if (obj.ObjectKind == ObjectKind.EventNpc)
+			var model = (DrawObject*)actor->GetModel();
+			if (model == null || model->Object.GetObjectType() != ObjectType.CharacterBase || ((CharacterBase*)model)->GetModelType() != CharacterBase.ModelType.Human)
 				return false;
 
 			return true;
