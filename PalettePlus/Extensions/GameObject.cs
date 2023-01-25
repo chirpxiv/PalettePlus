@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.ClientState.Objects.Enums;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 
 using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 
@@ -9,8 +11,7 @@ using PalettePlus.Interop;
 using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Services;
-using Dalamud.Game.ClientState.Objects.SubKinds;
-using System.Text.RegularExpressions;
+using Dalamud.Logging;
 
 namespace PalettePlus.Extensions {
 	internal static class GameObjectExtensions {
@@ -38,7 +39,16 @@ namespace PalettePlus.Extensions {
 
 		internal unsafe static bool IsValidForPalette(this GameObject obj) {
 			var actor = (Actor*)obj.Address;
-			return !(actor == null || actor->ModelId != 0 || actor->GetModel() == null);
+
+			if (obj is not Character) return false;
+
+			var isValid = actor != null && actor->ModelId == 0 && actor->GetModel() != null;
+			if (!isValid) return false;
+
+			if (obj.ObjectKind == ObjectKind.EventNpc)
+				return false;
+
+			return true;
 		}
 
 		internal static GameObject? FindOverworldEquiv(this GameObject obj) {
