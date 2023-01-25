@@ -16,12 +16,14 @@ namespace PalettePlus.Interop {
 		public const string SetCharaPaletteStr = "PalettePlus.SetCharaPalette";
 		public const string RemoveCharaPaletteStr = "PalettePlus.RemoveCharaPalette";
 		public const string BuildCharaPaletteStr = "PalettePlus.BuildCharaPalette";
+		public const string PaletteChangedStr = "PalettePlus.PaletteChanged";
 
 		private static ICallGateProvider<string>? IApiVersion;
 
 		private static ICallGateProvider<Character, string>? IGetCharaPalette;
 		private static ICallGateProvider<Character, string, object>? ISetCharaPalette;
 		private static ICallGateProvider<Character, object>? IRemoveCharaPalette;
+		private static ICallGateProvider<Character, string, object>? IPaletteChanged;
 
 		// Constructs a new Palette object from character memory instead of fetching from cache.
 		private static ICallGateProvider<Character, string>? IBuildCharaPalette;
@@ -42,6 +44,8 @@ namespace PalettePlus.Interop {
 
 				IBuildCharaPalette = PluginServices.Interface.GetIpcProvider<Character, string>(BuildCharaPaletteStr);
 				IBuildCharaPalette.RegisterFunc(BuildCharaPalette);
+
+				IPaletteChanged = PluginServices.Interface.GetIpcProvider<Character, string, object>(PaletteChangedStr);
 			} catch (Exception e) {
 				PluginLog.Error("Failed to initialise Palette+ IPC", e);
 			}
@@ -71,6 +75,10 @@ namespace PalettePlus.Interop {
 		private static string BuildCharaPalette(Character chara) {
 			PaletteService.BuildCharaPalette(chara, out var palette, out _, false);
 			return palette.ToString();
+		}
+
+		internal static void PaletteChanged(Character character, Palette palette) {
+			IPaletteChanged?.SendMessage(character, palette.ToString());
 		}
 
 	}

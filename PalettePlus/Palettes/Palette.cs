@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 
 using Dalamud.Game.ClientState.Objects.Types;
 
+using PalettePlus.Interop;
 using PalettePlus.Structs;
 using PalettePlus.Services;
 using PalettePlus.Palettes.Attributes;
@@ -36,9 +37,10 @@ namespace PalettePlus.Palettes {
 
 		public unsafe void Apply(Character obj, bool save = false) {
 			var model = Model.GetModel(obj);
-			if (model != null)
+			if (model != null) {
 				model->ApplyPalette(this);
-
+				IpcProvider.PaletteChanged(obj, this);
+			}
 			if (save) {
 				var p = PaletteService.GetCharaPalette(obj).Add(this);
 				PaletteService.SetCharaPalette(obj, p);
