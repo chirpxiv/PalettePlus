@@ -6,7 +6,6 @@ using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects;
 
 using FFXIVClientStructs.FFXIV.Client.Game.Control;
-using PalettePlus.Interop;
 
 namespace PalettePlus.Services {
 	internal class PluginServices {

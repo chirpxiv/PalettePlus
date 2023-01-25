@@ -48,12 +48,8 @@ namespace PalettePlus.Services {
 			}
 
 			Palette? persists = null;
-			foreach (var persist in chara.GetPersists()) {
-				if (persists == null)
-					persists = persist;
-				else
-					persists.Add(persist);
-			}
+			foreach (var persist in chara.GetPersists())
+				persists = persists == null ? persist : persists.Add(persist);
 
 			var store = false;
 			if (!ActivePalettes.TryGetValue(chara, out var stored)) {
@@ -64,16 +60,10 @@ namespace PalettePlus.Services {
 			Palette result;
 			switch (order) {
 				case ApplyOrder.PersistFirst:
-					if (persists == null)
-						persists = stored;
-					else
-						persists.Add(stored);
-					result = persists;
+					result = persists == null ? stored : persists.Add(stored);
 					break;
 				case ApplyOrder.StoredFirst:
-					if (persists != null)
-						stored.Add(persists);
-					result = stored;
+					result = persists == null ? stored : stored.Add(persists);
 					break;
 				default:
 					result = stored;

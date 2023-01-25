@@ -41,15 +41,16 @@ namespace PalettePlus.Palettes {
 				model->ApplyPalette(this);
 
 			if (save) {
-				var p = PaletteService.GetCharaPalette(obj);
-				p.Add(this);
+				var p = PaletteService.GetCharaPalette(obj).Add(this);
 				PaletteService.SetCharaPalette(obj, p);
 			}
 		}
 
-		public void Add(Palette p) {
+		public Palette Add(Palette p) {
+			var res = (Palette)Clone();
 			foreach (var (key, val) in p.ShaderParams)
-				ShaderParams[key] = val;
+				res.ShaderParams[key] = val;
+			return res;
 		}
 
 		// Shader Params
