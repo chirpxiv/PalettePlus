@@ -51,6 +51,11 @@ namespace PalettePlus.Services {
 			}
 
 			var key = chara.GetNameAndWorld();
+			if (chara.ObjectIndex == 200) {
+				var local = PluginServices.ClientState.LocalPlayer;
+				if (local != null)
+					key = local.GetNameAndWorld();
+			}
 
 			Palette? persists = null;
 			foreach (var persist in chara.GetPersists())
@@ -89,6 +94,7 @@ namespace PalettePlus.Services {
 
 			palette.Apply(chara);
 			ActivePalettes[chara.GetNameAndWorld()] = palette;
+			PluginLog.Information($"Set {chara.GetNameAndWorld()}");
 		}
 
 		public static void RemoveCharaPalette(Character chara)
