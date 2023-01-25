@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
+using Dalamud.Logging;
 using Dalamud.Hooking;
 using Dalamud.Game.ClientState.Objects.Types;
 
@@ -9,7 +10,6 @@ using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 using PalettePlus.Structs;
 using PalettePlus.Services;
 using PalettePlus.Extensions;
-using Dalamud.Logging;
 
 namespace PalettePlus.Interop {
 	internal static class Hooks {
@@ -61,12 +61,16 @@ namespace PalettePlus.Interop {
 
 			var exec = EnableDrawHook.Original(a1);
 
-			if (isNew) {
-				var obj = PluginServices.ObjectTable.CreateObjectReference((nint)a1);
-				if (obj != null && obj is Character chara && obj.IsValidForPalette()) {
-					var palette = PaletteService.GetCharaPalette(chara, ApplyOrder.StoredFirst);
-					palette.Apply(chara);
+			try {
+				if (isNew) {
+					var obj = PluginServices.ObjectTable.CreateObjectReference((nint)a1);
+					if (obj != null && obj is Character chara && obj.IsValidForPalette()) {
+						var palette = PaletteService.GetCharaPalette(chara, ApplyOrder.StoredFirst);
+						palette.Apply(chara);
+					}
 				}
+			} catch (Exception e) {
+				PluginLog.Error("Failed to load palette for actor", e);
 			}
 
 			return exec;

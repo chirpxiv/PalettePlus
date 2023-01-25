@@ -17,12 +17,12 @@ namespace PalettePlus.Structs {
 		[FieldOffset(0x9e0)] public unsafe ModelShader* DecalShader;
 
 		public unsafe ModelParams* GetModelParams() {
-			if (ModelShader == null) return null;
+			if (ModelShader == null || (nint)ModelShader == 0) return null;
 			return ModelShader->ModelParams;
 		}
 
 		public unsafe DecalParams* GetDecalParams() {
-			if (DecalShader == null) return null;
+			if (DecalShader == null || (nint)ModelShader == 0) return null;
 			return DecalShader->DecalParams;
 		}
 
@@ -36,19 +36,21 @@ namespace PalettePlus.Structs {
 			var modelParams = new ModelParams();
 			var decalParams = new DecalParams();
 
-			fixed (byte* custom = Human.CustomizeData) {
-				var model = *ModelShader;
-				model.Parameters = (IntPtr)(ModelParams*)&modelParams;
+			if (ModelShader != null && (nint)ModelShader != 0 && DecalShader != null && (nint)DecalShader != 0) {
+				fixed (byte* custom = Human.CustomizeData) {
+					var model = *ModelShader;
+					model.Parameters = (IntPtr)(ModelParams*)&modelParams;
 
-				var decal = *DecalShader;
-				decal.Parameters = (IntPtr)(DecalParams*)&decalParams;
+					var decal = *DecalShader;
+					decal.Parameters = (IntPtr)(DecalParams*)&decalParams;
 
-				for (var i = 0; i < 4; i++) { // This may be 3 instead of 4.
-					model.Pointers[i] = (ulong)model.Parameters;
-					decal.Pointers[i] = (ulong)decal.Parameters;
+					for (var i = 0; i < 4; i++) { // This may be 3 instead of 4.
+						model.Pointers[i] = (ulong)model.Parameters;
+						decal.Pointers[i] = (ulong)decal.Parameters;
+					}
+
+					Interop.Hooks.GenerateColors!(Interop.Hooks.UnknownQWord, &model, &decal, custom);
 				}
-
-				Interop.Hooks.GenerateColors!(Interop.Hooks.UnknownQWord, &model, &decal, custom);
 			}
 
 			return new ParamContainer {
