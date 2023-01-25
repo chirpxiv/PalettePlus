@@ -3,8 +3,6 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 
-using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
-
 using PalettePlus.Services;
 using PalettePlus.Extensions;
 

@@ -62,7 +62,8 @@ namespace PalettePlus.Interface.Windows.Tabs {
 				}
 				ImGui.EndDisabled();
 			} else {
-				redraw |= ImGui.Checkbox($"##PersistEnabled{PersistIndex}", ref persist.Enabled);
+				if (ImGui.Checkbox($"##PersistEnabled{PersistIndex}", ref persist.Enabled))
+					redraw |= persist.Enabled;
 			}
 
 			ImGui.NextColumn();
@@ -82,7 +83,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.NextColumn();
 			ImGui.SetNextItemWidth(ImGui.GetContentRegionAvail().X);
 			if (PaletteSelect.Draw($"##PersistPalette{PersistIndex}", persist.PaletteId == "" ? "Select a palette..." : persist.PaletteId, out var selected)) {
-				redraw = true; 
+				redraw |= true; 
 				persist.PaletteId = selected!.Name;
 			}
 
@@ -90,10 +91,8 @@ namespace PalettePlus.Interface.Windows.Tabs {
 				persist.PaletteId = "";
 
 			ImGui.NextColumn();
-			if (!add && ImGuiComponents.IconButton(PersistIndex, FontAwesomeIcon.Trash)) {
-				redraw = true;
+			if (!add && ImGuiComponents.IconButton(PersistIndex, FontAwesomeIcon.Trash))
 				PalettePlus.Config.Persistence.Remove(persist);
-			}
 
 			ImGui.NextColumn();
 

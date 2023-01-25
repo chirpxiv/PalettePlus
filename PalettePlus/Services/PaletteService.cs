@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
+using Dalamud.Logging;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using PalettePlus.Structs;
@@ -118,8 +120,15 @@ namespace PalettePlus.Services {
 		}
 
 		public unsafe static void RedrawActivePalettes() {
-			foreach (var chara in ActivePalettes.Keys)
-				chara.Redraw();
+			foreach (GameObject chara in ActivePalettes.Keys) {
+				try {
+					// could not actually find a good way to verify validity here.
+					if (chara.Address != IntPtr.Zero && chara.IsValid())
+						chara.Redraw();
+				} catch (Exception e) {
+					PluginLog.Error($"Failed to redraw actor: {chara}", e);
+				}
+			}
 		}
 	}
 }

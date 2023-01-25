@@ -1,11 +1,11 @@
 ﻿using System;
 
+using Dalamud.Logging;
 using Dalamud.Plugin.Ipc;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using PalettePlus.Services;
 using PalettePlus.Palettes;
-using Dalamud.Logging;
 
 namespace PalettePlus.Interop {
 	public static class IpcProvider {

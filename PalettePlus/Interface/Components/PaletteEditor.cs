@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 using ImGuiNET;
 
+using PalettePlus.Services;
 using PalettePlus.Palettes;
 using PalettePlus.Palettes.Attributes;
-using PalettePlus.Services;
 
 namespace PalettePlus.Interface.Components {
 	public static class PaletteEditor {

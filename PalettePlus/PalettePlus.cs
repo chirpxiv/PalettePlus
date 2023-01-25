@@ -1,5 +1,6 @@
 ﻿using Dalamud.Plugin;
 
+using Dalamud.Logging;
 using Dalamud.Game.Command;
 
 using PalettePlus.Services;
@@ -32,6 +33,8 @@ namespace PalettePlus {
 				HelpMessage = "Show the Palette+ window."
 			});
 
+			PluginServices.ClientState.Logout += OnLogoutEvent;
+
 			PluginServices.Framework.RunOnFrameworkThread(() => {
 				foreach (var persist in Config.Persistence)
 					persist.RedrawTargetActor();
@@ -43,11 +46,13 @@ namespace PalettePlus {
 
 			Hooks.Dispose();
 
-			PaletteService.RedrawActivePalettes();
-
 			PluginServices.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;
 
 			PluginServices.CommandManager.RemoveHandler(CommandName);
+
+			PluginServices.ClientState.Logout -= OnLogoutEvent;
+
+			PaletteService.RedrawActivePalettes();
 
 			Config.Save();
 		}
@@ -57,6 +62,11 @@ namespace PalettePlus {
 
 		private void OnCommand(string _, string arguments)
 			=> ToggleMainWindow();
+
+		private void OnLogoutEvent(object? sender, object _) {
+			PluginLog.Verbose("OnLogoutEvent fired, clearing active palettes.");
+			PaletteService.ActivePalettes.Clear();
+		}
 
 		internal static string GetVersion()
 			=> typeof(PalettePlus).Assembly.GetName().Version!.ToString(fieldCount: 3);
