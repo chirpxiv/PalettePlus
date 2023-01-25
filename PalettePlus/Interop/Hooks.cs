@@ -62,8 +62,6 @@ namespace PalettePlus.Interop {
 			var exec = EnableDrawHook.Original(a1);
 
 			if (isNew) {
-				PluginLog.Information("called");
-
 				var obj = PluginServices.ObjectTable.CreateObjectReference((nint)a1);
 				if (obj != null && obj is Character chara && obj.IsValidForPalette()) {
 					var palette = PaletteService.GetCharaPalette(chara, ApplyOrder.StoredFirst);

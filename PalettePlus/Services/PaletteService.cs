@@ -44,7 +44,7 @@ namespace PalettePlus.Services {
 		internal static Dictionary<Character, Palette> ActivePalettes = new();
 
 		public static Palette GetCharaPalette(Character chara, ApplyOrder order = ApplyOrder.PersistFirst) {
-			if (chara.ObjectIndex > 200) {
+			if (chara.ObjectIndex > 200 && chara.ObjectIndex < 240) {
 				var ovw = chara.FindOverworldEquiv();
 				if (ovw != null && ovw is Character ovwChara) chara = ovwChara;
 			}
@@ -78,7 +78,7 @@ namespace PalettePlus.Services {
 		}
 
 		public static void SetCharaPalette(Character chara, Palette palette) {
-			if (chara.ObjectIndex > 200) {
+			if (chara.ObjectIndex > 200 && chara.ObjectIndex < 240) {
 				var ovw = chara.FindOverworldEquiv();
 				if (ovw != null && ovw is Character ovwChara)
 					chara = ovwChara;
