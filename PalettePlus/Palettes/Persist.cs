@@ -17,7 +17,7 @@ namespace PalettePlus.Palettes {
 			if (!obj.IsValidForPalette()) return false;
 
 			var name = obj.Name.ToString();
-			var match = !string.IsNullOrEmpty(name) && Character == name;
+			var match = !string.IsNullOrEmpty(name) && Character.Equals(name, System.StringComparison.OrdinalIgnoreCase);
 			if (match && !string.IsNullOrEmpty(CharaWorld) && obj is PlayerCharacter chara) {
 				var world = chara.HomeWorld.GameData;
 
