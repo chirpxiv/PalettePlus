@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 
 namespace PalettePlus.Extensions
@@ -9,9 +10,9 @@ namespace PalettePlus.Extensions
             return string.Join(' ', str.Split(' ').Select(word => word.Length > 0 ? char.ToUpper(word[0]) + word[1..] : word));
         }
 
-        internal static string FullTrim(this string str)
+        internal static string TrimAndSquash(this string str)
         {
-            return string.Join(' ', str.Split(' ').Where(word => word.Length > 0)).Trim();
+            return string.Join(' ', str.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
         }
     }
 }

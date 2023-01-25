@@ -75,7 +75,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.SetNextItemWidth(avail * 2/3);
 			if(ImGui.InputTextWithHint($"##PersistCharaName{PersistIndex}", "Enter character name...", ref persist.Character, 50))
 			{
-				persist.Character = persist.Character.FullTrim().CapitalizeEach();
+				persist.Character = persist.Character.TrimAndSquash().CapitalizeEach();
 			}
 			redraw |= ImGui.IsItemDeactivatedAfterEdit();
 
@@ -86,7 +86,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 			ImGui.SetNextItemWidth(avail * 1/3);
 			if(ImGui.InputTextWithHint($"##PersistWorld{PersistIndex}", "Enter world...", ref persist.CharaWorld, 50))
 			{
-				persist.CharaWorld = persist.CharaWorld.FullTrim().CapitalizeEach();
+				persist.CharaWorld = persist.CharaWorld.TrimAndSquash().CapitalizeEach();
 			}
 			redraw |= ImGui.IsItemDeactivatedAfterEdit();
 
