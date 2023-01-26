@@ -9,9 +9,9 @@ using PalettePlus.Interface.Windows.Tabs;
 
 namespace PalettePlus.Interface.Windows {
 	public class MainWindow : Window {
-		private ActorEdit ActorEdit = new();
-		private PaletteEdit PaletteEdit = new();
-		private PersistEdit PersistEdit = new();
+		internal ActorEdit ActorEdit = new();
+		internal PaletteEdit PaletteEdit = new();
+		internal PersistEdit PersistEdit = new();
 
 		private string CurrentTab = "";
 
@@ -47,6 +47,10 @@ namespace PalettePlus.Interface.Windows {
 			}
 		}
 
-		public override void OnClose() => PalettePlus.Config.Save();
+		public override void OnClose() {
+			ActorEdit.ActorList.Selected = null;
+
+			PalettePlus.Config.Save();
+		}
 	}
 }

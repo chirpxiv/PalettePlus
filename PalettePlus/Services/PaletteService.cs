@@ -90,7 +90,6 @@ namespace PalettePlus.Services {
 
 			palette.Apply(chara);
 			ActivePalettes[chara.GetNameAndWorld()] = palette;
-			PluginLog.Information($"Set {chara.GetNameAndWorld()}");
 		}
 
 		public static void RemoveCharaPalette(Character chara) {

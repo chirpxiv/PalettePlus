@@ -21,6 +21,9 @@ namespace PalettePlus.Interface.Components {
 		// Draw
 
 		internal void Draw(Action<Character?> callback) {
+			if (Selected != null && !Selected.IsValid())
+				Selected = null;
+
 			var width = Math.Min(ImGui.GetWindowSize().X * 1 / 3, 400);
 
 			ImGui.BeginGroup();
@@ -40,8 +43,8 @@ namespace PalettePlus.Interface.Components {
 
 			bool isSelectionValid = false;
 			for (var i = 0; i < GPoseStartIndex + 40; i++) {
-				var obj = PluginServices.ObjectTable[i];
-				if (obj == null || obj is not Character actor) continue;
+				var actor = PluginServices.ObjectTable[i] as Character;
+				if (actor == null || !actor.IsValid()) continue;
 
 				unsafe {
 					// TODO: ClientStructs PR

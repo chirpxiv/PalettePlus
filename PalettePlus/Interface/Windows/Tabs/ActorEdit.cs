@@ -14,7 +14,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 		private Palette DefaultPalette = new();
 		private Palette Palette = new();
 
-		private ActorList ActorList = new();
+		internal ActorList ActorList = new();
 		private PaletteList PaletteList = new();
 
 		private ParamContainer ParamContainer = new();
