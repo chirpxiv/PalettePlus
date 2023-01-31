@@ -64,7 +64,7 @@ namespace PalettePlus.Interop {
 		private static string ApiVersion() => API_VERSION;
 
 		private static string GetCharaPalette(Character chara)
-			=> PaletteService.GetCharaPalette(chara).ToString();
+			=> PaletteService.GetCharaPalette(chara, ApplyOrder.StoredFirst).ToString();
 
 		private static void SetCharaPalette(Character chara, string json)
 			=> PaletteService.SetCharaPalette(chara, Palette.FromJson(json));
