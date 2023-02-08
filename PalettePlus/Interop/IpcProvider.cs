@@ -9,13 +9,14 @@ using PalettePlus.Palettes;
 
 namespace PalettePlus.Interop {
 	public static class IpcProvider {
-		public const string API_VERSION = "1.0.0";
+		public const string API_VERSION = "1.1.0";
 
 		public const string ApiVersionStr = "PalettePlus.ApiVersion";
 		public const string GetCharaPaletteStr = "PalettePlus.GetCharaPalette";
 		public const string SetCharaPaletteStr = "PalettePlus.SetCharaPalette";
 		public const string RemoveCharaPaletteStr = "PalettePlus.RemoveCharaPalette";
 		public const string BuildCharaPaletteStr = "PalettePlus.BuildCharaPalette";
+		public const string BuildCharaPaletteOrEmptyStr = "PalettePlus.BuildCharaPaletteOrEmpty";
 		public const string PaletteChangedStr = "PalettePlus.PaletteChanged";
 
 		private static ICallGateProvider<string>? IApiVersion;
@@ -27,6 +28,7 @@ namespace PalettePlus.Interop {
 
 		// Constructs a new Palette object from character memory instead of fetching from cache.
 		private static ICallGateProvider<Character, string>? IBuildCharaPalette;
+		private static ICallGateProvider<Character, string>? IBuildCharaPaletteOrEmpty;
 
 		internal static void Init() {
 			try {
@@ -45,6 +47,9 @@ namespace PalettePlus.Interop {
 				IBuildCharaPalette = PluginServices.Interface.GetIpcProvider<Character, string>(BuildCharaPaletteStr);
 				IBuildCharaPalette.RegisterFunc(BuildCharaPalette);
 
+				IBuildCharaPaletteOrEmpty = PluginServices.Interface.GetIpcProvider<Character, string>(BuildCharaPaletteOrEmptyStr);
+				IBuildCharaPaletteOrEmpty.RegisterFunc(BuildCharaPaletteOrEmpty);
+
 				IPaletteChanged = PluginServices.Interface.GetIpcProvider<Character, string, object>(PaletteChangedStr);
 			} catch (Exception e) {
 				PluginLog.Error("Failed to initialise Palette+ IPC", e);
@@ -57,6 +62,7 @@ namespace PalettePlus.Interop {
 			ISetCharaPalette?.UnregisterAction();
 			IRemoveCharaPalette?.UnregisterAction();
 			IBuildCharaPalette?.UnregisterFunc();
+			IBuildCharaPaletteOrEmpty?.UnregisterFunc();
 		}
 
 		// IPC Methods
@@ -74,6 +80,12 @@ namespace PalettePlus.Interop {
 
 		private static string BuildCharaPalette(Character chara) {
 			PaletteService.BuildCharaPalette(chara, out var palette, out _, false);
+			return palette.ToString();
+		}
+
+		private static string BuildCharaPaletteOrEmpty(Character chara) {
+			PaletteService.BuildCharaPalette(chara, out var palette, out _, false);
+			if (palette == null || palette.ShaderParams.Count == 0) return string.Empty;
 			return palette.ToString();
 		}
 
