@@ -4,8 +4,11 @@ using System.Numerics;
 using System.Reflection;
 using System.Collections.Generic;
 
+using Dalamud.Logging;
+
 using ImGuiNET;
 
+using PalettePlus.Extensions;
 using PalettePlus.Services;
 using PalettePlus.Palettes;
 using PalettePlus.Palettes.Attributes;
@@ -121,18 +124,21 @@ namespace PalettePlus.Interface.Components {
 				ImGui.SameLine();
 
 				if (data is Vector4 vec4) {
+					vec4 = vec4.RgbSqrt();
+					
 					var alpha = field.Attributes.Any(attr => attr is ShowAlpha);
 					if (alpha) {
 						if (ImGui.ColorEdit4(label, ref vec4))
-							newVal = vec4;
+							newVal = vec4.RgbPow2();
 					} else {
 						var vec3 = new Vector3(vec4.X, vec4.Y, vec4.Z);
 						if (ImGui.ColorEdit3(label, ref vec3))
-							newVal = new Vector4(vec3, vec4.W);
+							newVal = new Vector4(vec3.RgbPow2(), vec4.W);
 					}
 				} else if (data is Vector3 vec3) {
+					vec3 = vec3.RgbSqrt();
 					if (ImGui.ColorEdit3(label, ref vec3))
-						newVal = vec3;
+						newVal = vec3.RgbPow2();
 				} else if (data is float flt) {
 					var slider = (Slider?)field.Attributes.FirstOrDefault(attr => attr is Slider);
 
