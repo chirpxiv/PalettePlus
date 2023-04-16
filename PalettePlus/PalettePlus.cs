@@ -52,7 +52,7 @@ namespace PalettePlus {
 
 			PluginServices.ClientState.Logout -= OnLogoutEvent;
 
-			PaletteService.RedrawActivePalettes();
+			PluginServices.Framework.RunOnFrameworkThread(PaletteService.RedrawActivePalettes);
 
 			Config.Save();
 		}
