@@ -126,7 +126,10 @@ namespace PalettePlus.Services {
 			}
 		}
 
-		public unsafe static void RedrawActivePalettes() {
+		public static void RedrawActivePalettes() {
+			if (PluginServices.Framework.IsFrameworkUnloading || !PluginServices.ClientState.IsLoggedIn)
+				return;
+
 			foreach ((string,string) key in ActivePalettes.Keys) {
 				try {
 					var chara = PluginServices.ObjectTable.FirstOrDefault(a => {
