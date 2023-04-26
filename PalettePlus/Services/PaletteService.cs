@@ -59,22 +59,15 @@ namespace PalettePlus.Services {
 
 			var store = false;
 			if (!ActivePalettes.TryGetValue(key, out var stored)) {
-				store = true;
 				BuildCharaPalette(chara, out stored, out _);
+				store = persists != null || stored.ShaderParams.Count > 0;
 			}
-
-			Palette result;
-			switch (order) {
-				case ApplyOrder.PersistFirst:
-					result = persists == null ? stored : persists.Add(stored);
-					break;
-				case ApplyOrder.StoredFirst:
-					result = persists == null ? stored : stored.Add(persists);
-					break;
-				default:
-					result = stored;
-					break;
-			}
+			
+			var result = order switch {
+				ApplyOrder.PersistFirst => persists == null ? stored : persists.Add(stored),
+				ApplyOrder.StoredFirst => persists == null ? stored : stored.Add(persists),
+				_ => stored
+			};
 
 			if (store) ActivePalettes[key] = result;
 
