@@ -6,7 +6,7 @@ using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 
 using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
-using CSGameObject = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
+using CSCharacter = FFXIVClientStructs.FFXIV.Client.Game.Character.Character;
 
 using PalettePlus.Interop;
 using PalettePlus.Structs;
@@ -14,9 +14,28 @@ using PalettePlus.Palettes;
 using PalettePlus.Services;
 
 namespace PalettePlus.Extensions {
-	internal static class GameObjectExtensions {
-		internal unsafe static ModelParams* UpdateColors(this GameObject actor) {
-			var model = Model.GetModel(actor);
+	internal static class CharacterExtensions {
+		private unsafe static CSCharacter* GetStruct(this Character actor)
+			=> (CSCharacter*)actor.Address;
+
+		internal unsafe static Model* GetModel(this Character actor)
+			=> actor.HasHumanModel() ? (Model*)actor.GetStruct()->GameObject.DrawObject : null;
+
+		internal unsafe static bool HasHumanModel(this Character actor) {
+			var chara = actor.GetStruct();
+			if (chara == null) return false;
+			
+			var modelId = chara->ModelCharaId_2 != -1 ? chara->ModelCharaId_2 : chara->ModelCharaId;
+			if (modelId != 0) return false;
+			
+			var drawObject = chara->GameObject.DrawObject;
+			if (drawObject == null || drawObject->Object.GetObjectType() != ObjectType.CharacterBase) return false;
+
+			return ((CharacterBase*)drawObject)->GetModelType() == CharacterBase.ModelType.Human;
+		}
+		
+		internal unsafe static ModelParams* UpdateColors(this Character actor) {
+			var model = actor.GetModel();
 			if (model == null) return null;
 
 			Hooks.UpdateColors(model);
@@ -24,7 +43,7 @@ namespace PalettePlus.Extensions {
 			return model->GetModelParams();
 		}
 
-		internal static List<Palette> GetPersists(this GameObject actor) {
+		internal static List<Palette> GetPersists(this Character actor) {
 			var results = new List<Palette>();
 
 			foreach (var persist in PalettePlus.Config.Persistence) {
@@ -37,26 +56,14 @@ namespace PalettePlus.Extensions {
 			return results;
 		}
 
-		internal unsafe static bool IsValidForPalette(this GameObject obj) {
-			var actor = (Actor*)obj.Address;
+		internal static bool IsValidForPalette(this Character obj)
+			=> obj.ObjectKind != ObjectKind.EventNpc && obj.HasHumanModel();
 
-			if (obj is not Character || obj.ObjectKind == ObjectKind.EventNpc) return false;
+		internal static Character? FindOverworldEquiv(this Character obj)
+			=> PluginServices.ObjectTable.FirstOrDefault(ch => ch.ObjectIndex < 200 && ch is Character && ch.Name.ToString() == obj.Name.ToString()) as Character;
 
-			if (actor == null || actor->ModelId != 0) return false;
-
-			var model = (DrawObject*)actor->GetModel();
-			if (model == null || model->Object.GetObjectType() != ObjectType.CharacterBase || ((CharacterBase*)model)->GetModelType() != CharacterBase.ModelType.Human)
-				return false;
-
-			return true;
-		}
-
-		internal unsafe static GameObject? FindOverworldEquiv(this GameObject obj)
-			=> PluginServices.ObjectTable.FirstOrDefault(ch => ch.ObjectIndex < 200 && ch is Character && ch.Name.ToString() == obj.Name.ToString());
-
-		internal unsafe static void Redraw(this GameObject obj) {
-			var actor = (CSGameObject*)obj.Address;
-			if (actor == null) return;
+		internal unsafe static void Redraw(this Character obj) {
+			var actor = &obj.GetStruct()->GameObject;
 			actor->DisableDraw();
 			actor->EnableDraw();
 		}

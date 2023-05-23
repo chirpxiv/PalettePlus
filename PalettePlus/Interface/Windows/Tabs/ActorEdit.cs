@@ -2,7 +2,6 @@
 
 using Dalamud.Game.ClientState.Objects.Types;
 
-using PalettePlus.Structs;
 using PalettePlus.Palettes;
 using PalettePlus.Services;
 using PalettePlus.Extensions;
@@ -15,7 +14,6 @@ namespace PalettePlus.Interface.Windows.Tabs {
 		private Palette Palette = new();
 
 		internal ActorList ActorList = new();
-		private PaletteList PaletteList = new();
 
 		private ParamContainer ParamContainer = new();
 
@@ -66,7 +64,7 @@ namespace PalettePlus.Interface.Windows.Tabs {
 				PaletteService.BuildCharaPalette(actor, out Palette, out DefaultPalette);
 			}
 
-			var model = Model.GetModel(actor);
+			var model = actor.GetModel();
 			if (model != null) {
 				ParamContainer.Model = *model->ModelShader->ModelParams;
 				ParamContainer.Decal = *model->DecalShader->DecalParams;

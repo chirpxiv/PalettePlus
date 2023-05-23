@@ -129,7 +129,7 @@ namespace PalettePlus.Services {
 						if (a is Character chara)
 							return chara.GetNameAndWorld() == key;
 						return false;
-					});
+					}) as Character;
 
 					if (chara != null) chara.Redraw();
 				} catch (Exception e) {

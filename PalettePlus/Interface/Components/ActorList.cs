@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using ImGuiNET;
 
 using Dalamud.Game.ClientState.Objects.Types;
-
+using PalettePlus.Extensions;
 using PalettePlus.Structs;
 using PalettePlus.Services;
 
@@ -44,13 +44,7 @@ namespace PalettePlus.Interface.Components {
 			bool isSelectionValid = false;
 			for (var i = 0; i < GPoseStartIndex + 40; i++) {
 				var actor = PluginServices.ObjectTable[i] as Character;
-				if (actor == null || !actor.IsValid()) continue;
-
-				unsafe {
-					// TODO: ClientStructs PR
-					if (Actor.GetActor(actor)->ModelId != 0) continue;
-					if (Model.GetModel(actor) == null) continue;
-				}
+				if (actor == null || !actor.IsValid() || !actor.HasHumanModel()) continue;
 
 				var name = actor.Name.ToString();
 				if (name.Length == 0) continue;
@@ -60,7 +54,7 @@ namespace PalettePlus.Interface.Components {
 
 				var cont = new ActorContainer(i, actor);
 
-				var exists = ActorNames.TryGetValue(name, out var _);
+				var exists = ActorNames.TryGetValue(name, out _);
 				if (exists) {
 					if (i >= GPoseStartIndex) {
 						if (Selected != null && Selected.Address == ActorNames[name].GameObject.Address)
@@ -70,7 +64,7 @@ namespace PalettePlus.Interface.Components {
 						var x = 2;
 						while (exists) {
 							name = $"{actor.Name} #{x}";
-							exists = ActorNames.TryGetValue(name, out var _);
+							exists = ActorNames.TryGetValue(name, out _);
 							x++;
 						}
 						ActorNames.Add(name, cont);

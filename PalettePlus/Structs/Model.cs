@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-using Dalamud.Game.ClientState.Objects.Types;
-
 using FFXIVClientStructs.FFXIV.Client.Graphics.Scene;
 using GameObjectStruct = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
+
+using Dalamud.Game.ClientState.Objects.Types;
 
 using PalettePlus.Palettes;
 
@@ -28,8 +28,7 @@ namespace PalettePlus.Structs {
 
 		public unsafe static Model* GetModel(GameObject obj) {
 			var gameObject = (GameObjectStruct*)obj.Address;
-			if (gameObject == null) return null;
-			return (Model*)gameObject->DrawObject;
+			return gameObject != null ? (Model*)gameObject->DrawObject : null;
 		}
 
 		public unsafe ParamContainer GenerateColorValues() {
@@ -60,8 +59,6 @@ namespace PalettePlus.Structs {
 		}
 
 		public unsafe void ApplyPalette(Palette p) {
-
-
 			var mP = GetModelParams();
 			if (mP != null) {
 				var o = (object)*mP;

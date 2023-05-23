@@ -11,6 +11,7 @@ using Dalamud.Game.ClientState.Objects.Types;
 using PalettePlus.Interop;
 using PalettePlus.Structs;
 using PalettePlus.Services;
+using PalettePlus.Extensions;
 using PalettePlus.Palettes.Attributes;
 
 namespace PalettePlus.Palettes {
@@ -36,7 +37,7 @@ namespace PalettePlus.Palettes {
 		}
 
 		public unsafe void Apply(Character obj, bool save = false) {
-			var model = Model.GetModel(obj);
+			var model = obj.GetModel();
 			if (model != null) {
 				model->ApplyPalette(this);
 				IpcProvider.PaletteChanged(obj, this);

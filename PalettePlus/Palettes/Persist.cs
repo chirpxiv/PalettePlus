@@ -13,7 +13,7 @@ namespace PalettePlus.Palettes {
 		public string CharaWorld = "";
 		public string PaletteId = "";
 
-		public unsafe bool IsApplicableTo(GameObject obj) {
+		public unsafe bool IsApplicableTo(Character obj) {
 			if (!obj.IsValidForPalette()) return false;
 
 			var name = obj.Name.ToString();
@@ -32,16 +32,17 @@ namespace PalettePlus.Palettes {
 			return match;
 		}
 
-		public GameObject? FindTargetActor() {
-			GameObject? result = null;
+		public Character? FindTargetActor() {
+			Character? result = null;
 
 			foreach (var obj in PluginServices.ObjectTable) {
-				if (obj.ObjectIndex < 200) {
-					if (result == null && IsApplicableTo(obj))
-						result = obj;
-					else continue;
-				} else if (IsApplicableTo(obj)) {
-					result = obj;
+				if (obj is not Character chara) continue;
+				
+				if (chara.ObjectIndex < 200) {
+					if (result == null && IsApplicableTo(chara))
+						result = chara;
+				} else if (IsApplicableTo(chara)) {
+					result = chara;
 					break;
 				}
 			}
@@ -49,7 +50,7 @@ namespace PalettePlus.Palettes {
 			return result;
 		}
 
-		public unsafe void RedrawTargetActor() {
+		public void RedrawTargetActor() {
 			var tar = FindTargetActor();
 			if (tar == null) return;
 			tar.Redraw();
