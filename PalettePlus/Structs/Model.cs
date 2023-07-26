@@ -7,6 +7,7 @@ using GameObjectStruct = FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject;
 using Dalamud.Game.ClientState.Objects.Types;
 
 using PalettePlus.Palettes;
+using PalettePlus.Services;
 
 namespace PalettePlus.Structs {
 	[StructLayout(LayoutKind.Explicit)]
@@ -71,6 +72,31 @@ namespace PalettePlus.Structs {
 				var o = (object)*dP;
 				p.ApplyShaderParams(ref o);
 				*dP = (DecalParams)o;
+			}
+		}
+		
+		public unsafe void BuildCharaPalette(out Palette palette, out Palette basePalette, bool contain = false) {
+			palette = new();
+			basePalette = new();
+
+			// TODO: Refactor
+
+			var mP = GetModelParams();
+			if (mP != null)
+				palette.CopyShaderParams(*mP);
+
+			var dP = GetDecalParams();
+			if (dP != null)
+				palette.CopyShaderParams(*dP);
+
+			var vals = GenerateColorValues();
+			basePalette.CopyShaderParams(vals.Model);
+			basePalette.CopyShaderParams(vals.Decal);
+			if (contain) PaletteService.ParamContainer = vals;
+
+			foreach (var (key, value) in palette.ShaderParams) {
+				if (value.Equals(basePalette.ShaderParams[key]))
+					palette.ShaderParams.Remove(key);
 			}
 		}
 	}
