@@ -60,5 +60,7 @@ public class GuiService : IDisposable {
 	public void Dispose() {
 		this._uiBuilder.Draw -= this.Windows.Draw;
 		this._uiBuilder.OpenConfigUi -= ToggleMainWindow;
+		
+		this.Windows.RemoveAllWindows();
 	}
 }
