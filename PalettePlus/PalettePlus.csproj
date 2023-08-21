@@ -60,4 +60,8 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Palettes\" />
+  </ItemGroup>
 </Project>

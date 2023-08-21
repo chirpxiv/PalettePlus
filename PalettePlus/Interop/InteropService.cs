@@ -5,8 +5,7 @@ using PalettePlus.Interop.Hooking;
 
 namespace PalettePlus.Interop;
 
-// Delegate declarations
-// TODO
+// TODO: Delegate declarations
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class InteropService : IDisposable {
