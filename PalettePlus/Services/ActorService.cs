@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 using Dalamud.Plugin.Services;
 using Dalamud.Game.ClientState.Objects.Types;
@@ -64,4 +63,10 @@ public class ActorService {
 
 		return ((CharacterBase*)drawPtr)->GetModelType() == CharacterBase.ModelType.Human;
 	}
+
+	public bool IsGPoseActor(Character chara)
+		=> IsGPoseActor(chara.ObjectIndex);
+
+	public bool IsGPoseActor(uint id)
+		=> id is >= GPoseIndex and < MaxCharaIndex;
 }

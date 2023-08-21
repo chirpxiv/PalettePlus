@@ -23,6 +23,7 @@ public class MainWindow : Window {
     
 	public MainWindow(IServiceContainer _services) : base("Palette+") {
 		this._services = _services;
+		RespectCloseHotkey = false;
 		this.AddTab<ActorTab>();
 	}
 
