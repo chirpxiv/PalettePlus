@@ -39,6 +39,12 @@ public class ActorService {
 				yield return chara;
 		}
 	}
+
+	public Character? GetHumanById(int id) {
+		if (this._objects[id] is Character chara && IsHuman(chara))
+			return chara;
+		return null;
+	}
 	
 	// Helpers
 
