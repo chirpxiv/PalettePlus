@@ -12,6 +12,7 @@ internal class DalamudServices {
 	
 	// Using interfaces to future-proof here - the next API bump will require this.
 	[PluginService] private ICommandManager CommandManager { get; set; } = null!;
+	[PluginService] private IObjectTable ObjectTable { get; set; } = null!;
 	[PluginService] private ISigScanner SigScanner { get; set; } = null!;
 
 	internal DalamudServices(DalamudPluginInterface api) {
@@ -23,5 +24,6 @@ internal class DalamudServices {
 		.AddInstance(this.PluginApi)
 		.AddInstance(this.PluginApi.UiBuilder)
 		.AddInstance(this.CommandManager)
+		.AddInstance(this.ObjectTable)
 		.AddInstance(this.SigScanner);
 }

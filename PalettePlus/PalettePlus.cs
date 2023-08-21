@@ -17,15 +17,16 @@ public sealed class PalettePlus : IDalamudPlugin {
 		// Register services
 		this.Services = new ServiceManager()
 			.AddDalamudServices(api)
-			.AddService<InteropService>()
-			.AddService<PaletteService>()
+			.AddService<ActorService>()
+			.AddService<CommandService>()
 			.AddService<GuiService>()
-			.AddService<CommandService>();
+			.AddService<InteropService>()
+			.AddService<PaletteService>();
 		
 		// and initialize them
+		this.Services.GetRequiredService<PaletteService>();
 		this.Services.GetRequiredService<GuiService>();
 		this.Services.GetRequiredService<CommandService>();
-		this.Services.GetRequiredService<PaletteService>();
 	}
 
 	public void Dispose() {

@@ -19,7 +19,7 @@ public class MainWindow : Window {
 
     private readonly List<IWindowTab> Tabs = new();
 	
-    // Initialization
+	// Initialization
     
 	public MainWindow(IServiceContainer _services) : base("Palette+") {
 		this._services = _services;
