@@ -10,7 +10,7 @@ namespace PalettePlus.Services;
 internal class DalamudServices {
 	private readonly DalamudPluginInterface PluginApi;
 	
-    // Using interfaces to future-proof here - the next API bump will require this.
+	// Using interfaces to future-proof here - the next API bump will require this.
 	[PluginService] private ICommandManager CommandManager { get; set; } = null!;
 	[PluginService] private ISigScanner SigScanner { get; set; } = null!;
 

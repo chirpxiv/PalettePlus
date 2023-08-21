@@ -3,12 +3,15 @@
 using PalettePlus.Core;
 using PalettePlus.Interop.Hooking;
 
-namespace PalettePlus.Interop; 
+namespace PalettePlus.Interop;
+
+// Delegate declarations
+// TODO
 
 // ReSharper disable once ClassNeverInstantiated.Global
 public class InteropService : IDisposable {
 	// Hooks
-    
+	
 	private readonly HookManager Hooks;
 	
 	// Native functions

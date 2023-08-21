@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 using Dalamud.Game;
+using Dalamud.Logging;
 
 namespace PalettePlus.Interop.Hooking; 
 
@@ -17,10 +18,8 @@ public class HookManager : IDisposable {
 	
 	// Factory methods
 
-	public HookWrapper<T> AddSignature<T>(T @delegate, string sig) where T : Delegate {
-		var addr = this._scanner.ScanText(sig);
-		return this.AddAddress(addr, @delegate);
-	}
+	public HookWrapper<T> AddSignature<T>(T @delegate, string sig) where T : Delegate
+		=> AddAddress(this._scanner.ScanText(sig), @delegate);
 
 	public HookWrapper<T> AddAddress<T>(nint address, T @delegate) where T : Delegate {
 		var hook = new HookWrapper<T>(address, @delegate);
@@ -38,8 +37,15 @@ public class HookManager : IDisposable {
 	// Disposal
 
 	public void Dispose() {
-		foreach (var (_, hook) in this.Hooks)
-			hook.Dispose();
+		PluginLog.Verbose("Disposing hooks...");
+		foreach (var (del, hook) in this.Hooks) {
+			try {
+				hook.Dispose();
+				PluginLog.Verbose($"Disposed hook: {del.Name}");
+			} catch (Exception err) {
+				PluginLog.Error($"Failed to dispose of hook '{del.Name}':\n{err}");
+			}
+		}
 		this.Hooks.Clear();
 	}
 }
