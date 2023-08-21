@@ -19,7 +19,7 @@ public class ActorTab : IWindowTab {
 	}
 
 	public void Draw() {
-		foreach (var actor in this._actors.GetEnumerator()) {
+		foreach (var actor in this._actors.EnumerateHumans()) {
 			ImGui.Text($"{actor.Name.ToString()} ({actor.ObjectIndex})");
 		}
 	}
