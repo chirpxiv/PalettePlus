@@ -10,8 +10,9 @@ namespace PalettePlus.Services;
 internal class DalamudServices {
 	private readonly DalamudPluginInterface PluginApi;
 	
+    // Using interfaces to future-proof here - the next API bump will require this.
 	[PluginService] private ICommandManager CommandManager { get; set; } = null!;
-	[PluginService] private SigScanner SigScanner { get; set; } = null!;
+	[PluginService] private ISigScanner SigScanner { get; set; } = null!;
 
 	internal DalamudServices(DalamudPluginInterface api) {
 		this.PluginApi = api;
@@ -22,5 +23,5 @@ internal class DalamudServices {
 		.AddInstance(this.PluginApi)
 		.AddInstance(this.PluginApi.UiBuilder)
 		.AddInstance(this.CommandManager)
-        .AddInstance(this.SigScanner);
+		.AddInstance(this.SigScanner);
 }

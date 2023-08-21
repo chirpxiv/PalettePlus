@@ -60,8 +60,4 @@
       <Private>false</Private>
     </Reference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Interop\" />
-  </ItemGroup>
 </Project>

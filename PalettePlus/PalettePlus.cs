@@ -1,6 +1,7 @@
 ﻿using Dalamud.Plugin;
 
 using PalettePlus.Core;
+using PalettePlus.Interop;
 using PalettePlus.Interface;
 using PalettePlus.Services;
 
@@ -16,6 +17,7 @@ public sealed class PalettePlus : IDalamudPlugin {
 		// Register services
 		this.Services = new ServiceManager()
 			.AddDalamudServices(api)
+			.AddService<InteropService>()
 			.AddService<PaletteService>()
 			.AddService<GuiService>()
 			.AddService<CommandService>();
@@ -23,6 +25,7 @@ public sealed class PalettePlus : IDalamudPlugin {
 		// and initialize them
 		this.Services.GetRequiredService<GuiService>();
 		this.Services.GetRequiredService<CommandService>();
+		this.Services.GetRequiredService<PaletteService>();
 	}
 
 	public void Dispose() {
