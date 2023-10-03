@@ -115,7 +115,7 @@ namespace PalettePlus.Services {
 
 					if (chara != null) chara.Redraw();
 				} catch (Exception e) {
-					PluginLog.Error($"Failed to redraw actor: {key}", e);
+					PluginServices.Log.Error($"Failed to redraw actor: {key}", e);
 				}
 			}
 		}

@@ -25,7 +25,7 @@ namespace PalettePlus.Extensions {
 			var chara = actor.GetStruct();
 			if (chara == null) return false;
 			
-			var modelId = chara->ModelCharaId_2 != -1 ? chara->ModelCharaId_2 : chara->ModelCharaId;
+			var modelId = chara->CharacterData.ModelCharaId_2 != -1 ? chara->CharacterData.ModelCharaId_2 : chara->CharacterData.ModelCharaId;
 			if (modelId != 0) return false;
 			
 			var drawObject = chara->GameObject.DrawObject;

@@ -52,7 +52,7 @@ namespace PalettePlus.Interop {
 
 				IPaletteChanged = PluginServices.Interface.GetIpcProvider<Character, string, object>(PaletteChangedStr);
 			} catch (Exception e) {
-				PluginLog.Error("Failed to initialise Palette+ IPC", e);
+				PluginServices.Log.Error("Failed to initialise Palette+ IPC", e);
 			}
 		}
 

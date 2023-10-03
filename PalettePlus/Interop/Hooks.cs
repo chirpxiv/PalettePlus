@@ -3,7 +3,6 @@ using System.Runtime.InteropServices;
 using System.Collections.Generic;
 using System.Linq;
 
-using Dalamud.Logging;
 using Dalamud.Hooking;
 using Dalamud.Game.ClientState.Objects.Types;
 
@@ -53,17 +52,14 @@ namespace PalettePlus.Interop {
 
 			var generateColors = PluginServices.SigScanner.ScanText(GenerateColorsSig);
 			GenerateColors = Marshal.GetDelegateForFunctionPointer<GenerateColorsDelegate>(generateColors);
-
-			var enableDraw = PluginServices.SigScanner.ScanText(EnableDrawSig);
-			EnableDrawHook = Hook<EnableDrawDelegate>.FromAddress(enableDraw, EnableDrawDetour);
+            
+			EnableDrawHook = PluginServices.Hooks.HookFromSignature<EnableDrawDelegate>(EnableDrawSig, EnableDrawDetour);
 			EnableDrawHook.Enable();
-
-			var copyChara = PluginServices.SigScanner.ScanText(CopyCharaSig);
-			CopyCharaHook = Hook<CopyCharaDelegate>.FromAddress(copyChara, CopyCharaDetour);
+            
+			CopyCharaHook = PluginServices.Hooks.HookFromSignature<CopyCharaDelegate>(CopyCharaSig, CopyCharaDetour);
 			CopyCharaHook.Enable();
-
-			var updateChara = PluginServices.SigScanner.ScanText(UpdateCharaSig);
-			UpdateCharaHook = Hook<UpdateCharaDelegate>.FromAddress(updateChara, UpdateCharaDetour);
+            
+			UpdateCharaHook = PluginServices.Hooks.HookFromSignature<UpdateCharaDelegate>(UpdateCharaSig, UpdateCharaDetour);
 			UpdateCharaHook.Enable();
 		}
 
@@ -95,7 +91,7 @@ namespace PalettePlus.Interop {
 						GetPalette(chara)?.Apply(chara);
 				}
 			} catch (Exception err) {
-				PluginLog.Error($"Failed to load palette for actor:\n{err}");
+				PluginServices.Log.Error($"Failed to load palette for actor:\n{err}");
 			}
 
 			return exec;
@@ -108,11 +104,11 @@ namespace PalettePlus.Interop {
 				var toObj = PluginServices.ObjectTable.CreateObjectReference(to) as Character;
 				var fromObj = PluginServices.ObjectTable.CreateObjectReference(from) as Character;
 				if (toObj != null && fromObj != null && toObj.ObjectIndex >= 200 && toObj.ObjectIndex < 240) {
-					PluginLog.Verbose($"Copying from {fromObj.ObjectIndex} to {toObj.ObjectIndex}");
+					PluginServices.Log.Verbose($"Copying from {fromObj.ObjectIndex} to {toObj.ObjectIndex}");
 					ActorCopy.Add(toObj.ObjectIndex, fromObj.ObjectIndex);
 				}
 			} catch (Exception err) {
-				PluginLog.Error($"Failed to handle character copy:\n{err}");
+				PluginServices.Log.Error($"Failed to handle character copy:\n{err}");
 			}
 
 			return exec;
@@ -136,12 +132,12 @@ namespace PalettePlus.Interop {
 
 					palette.Apply(owner!, true);
 					
-					PluginLog.Verbose($"Re-applying saved palette state for '{owner!.Name}'");
+					PluginServices.Log.Verbose($"Re-applying saved palette state for '{owner!.Name}'");
 
 					return result;
 				}
 			} catch (Exception err) {
-				PluginLog.Error($"Failed to handle character update:\n{err}");
+				PluginServices.Log.Error($"Failed to handle character update:\n{err}");
 			}
 
 			return UpdateCharaHook.Original(drawObj, data, skipEquip);

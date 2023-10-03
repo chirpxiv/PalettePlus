@@ -43,7 +43,7 @@ namespace PalettePlus {
 		public void Save() => PluginServices.Interface.SavePluginConfig(this);
 
 		private void Upgrade() {
-			PluginLog.Warning(string.Format(
+			PluginServices.Log.Warning(string.Format(
 				"Upgrading config version from {0} to {1}.\nThis is nothing to worry about, but some settings may change or reset!",
 				Version, _ConfigVer
 			));
@@ -55,7 +55,7 @@ namespace PalettePlus {
 			try {
 				PalettePlus.Config = PluginServices.Interface.GetPluginConfig() as Configuration ?? new();
 			} catch (Exception e) {
-				PluginLog.Error("Failed to load ColorEdit config. Settings have been reset.", e);
+				PluginServices.Log.Error("Failed to load ColorEdit config. Settings have been reset.", e);
 				PalettePlus.Config = new();
 			}
 			PalettePlus.Config.Init();

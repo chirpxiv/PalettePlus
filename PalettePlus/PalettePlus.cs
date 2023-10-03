@@ -1,6 +1,5 @@
 ﻿using Dalamud.Plugin;
 
-using Dalamud.Logging;
 using Dalamud.Game.Command;
 
 using PalettePlus.Services;
@@ -15,8 +14,8 @@ namespace PalettePlus {
 
 		public static Configuration Config { get; internal set; } = null!;
 
-		public PalettePlus(DalamudPluginInterface dalamud) {
-			PluginServices.Init(dalamud);
+		public PalettePlus(DalamudPluginInterface api) {
+			PluginServices.Init(api);
 
 			Configuration.LoadConfig();
 
@@ -63,8 +62,8 @@ namespace PalettePlus {
 		private void OnCommand(string _, string arguments)
 			=> ToggleMainWindow();
 
-		private void OnLogoutEvent(object? sender, object _) {
-			PluginLog.Verbose("OnLogoutEvent fired, clearing active palettes.");
+		private void OnLogoutEvent() {
+			PluginServices.Log.Verbose("OnLogoutEvent fired, clearing active palettes.");
 
 			PaletteService.ActivePalettes.Clear();
 			Hooks.ActorCopy.Clear();

@@ -2,6 +2,7 @@
 
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
+using Dalamud.Interface.Utility;
 
 using PalettePlus.Palettes;
 using PalettePlus.Extensions;

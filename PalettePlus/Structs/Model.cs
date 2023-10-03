@@ -37,7 +37,7 @@ namespace PalettePlus.Structs {
 			var decalParams = new DecalParams();
 
 			if (ModelShader != null && (nint)ModelShader != 0 && DecalShader != null && (nint)DecalShader != 0) {
-				fixed (byte* custom = Human.CustomizeData) {
+				fixed (byte* custom = Human.Customize.Data) {
 					var model = *ModelShader;
 					model.Parameters = (IntPtr)(ModelParams*)&modelParams;
 
