@@ -128,7 +128,7 @@ namespace PalettePlus.Interface.Components {
 					
 					var alpha = field.Attributes.Any(attr => attr is ShowAlpha);
 					if (alpha) {
-						if (ImGui.ColorEdit4(label, ref vec4))
+						if (ImGui.ColorEdit4(label, ref vec4, ImGuiColorEditFlags.AlphaPreviewHalf | ImGuiColorEditFlags.HDR))
 							newVal = vec4.RgbPow2();
 					} else {
 						var vec3 = new Vector3(vec4.X, vec4.Y, vec4.Z);
@@ -137,7 +137,7 @@ namespace PalettePlus.Interface.Components {
 					}
 				} else if (data is Vector3 vec3) {
 					vec3 = vec3.RgbSqrt();
-					if (ImGui.ColorEdit3(label, ref vec3))
+					if (ImGui.ColorEdit3(label, ref vec3, ImGuiColorEditFlags.HDR))
 						newVal = vec3.RgbPow2();
 				} else if (data is float flt) {
 					var slider = (Slider?)field.Attributes.FirstOrDefault(attr => attr is Slider);
