@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Authors>Chirp</Authors>
     <Company>Ktisis Tools</Company>
-    <Version>0.3.9</Version>
+    <Version>0.3.11</Version>
     <Description>Custom color palettes for FFXIV characters.</Description>
     <Copyright>MIT License</Copyright>
     <PackageProjectUrl>https://github.com/chirpxiv/PalettePlus</PackageProjectUrl>
