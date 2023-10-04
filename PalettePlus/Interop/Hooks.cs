@@ -78,7 +78,7 @@ namespace PalettePlus.Interop {
 		}
 
 		private unsafe static nint EnableDrawDetour(CSGameObject* a1) {
-			var c1 = ((byte)a1->TargetableStatus & 0x40) != 0;
+            var c1 = ((byte)a1->TargetableStatus & 0x80) != 0;
 			var c2 = (a1->RenderFlags & 0x2000000) == 0;
 			var isNew = !(c1 && c2);
 
