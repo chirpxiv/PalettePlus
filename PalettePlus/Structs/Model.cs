@@ -49,7 +49,7 @@ namespace PalettePlus.Structs {
 						decal.Pointers[i] = (ulong)decal.Parameters;
 					}
 
-					Interop.Hooks.GenerateColors!(Interop.Hooks.UnknownQWord, &model, &decal, custom);
+					Interop.Hooks.GenerateColors(CharacterUtility.Instance(), &model, &decal, custom);
 				}
 			}
 

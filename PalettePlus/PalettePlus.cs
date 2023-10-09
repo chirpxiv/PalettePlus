@@ -14,12 +14,15 @@ namespace PalettePlus {
 
 		public static Configuration Config { get; internal set; } = null!;
 
+		private Hooks Hooks;
+
 		public PalettePlus(DalamudPluginInterface api) {
 			PluginServices.Init(api);
 
 			Configuration.LoadConfig();
 
-			Hooks.Init();
+			this.Hooks = new Hooks();
+			this.Hooks.Init();
 
 			IpcProvider.Init();
 
@@ -43,7 +46,7 @@ namespace PalettePlus {
 		public void Dispose() {
 			IpcProvider.Dispose();
 
-			Hooks.Dispose();
+			this.Hooks.Dispose();
 
 			PluginServices.Interface.UiBuilder.Draw -= PluginGui.Windows.Draw;
 
