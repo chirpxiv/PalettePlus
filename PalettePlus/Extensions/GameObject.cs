@@ -25,11 +25,12 @@ namespace PalettePlus.Extensions {
 			var chara = actor.GetStruct();
 			if (chara == null) return false;
 			
-			var modelId = chara->CharacterData.ModelCharaId_2 != -1 ? chara->CharacterData.ModelCharaId_2 : chara->CharacterData.ModelCharaId;
-			if (modelId != 0) return false;
+			//var modelId = chara->CharacterData.ModelCharaId_2 != -1 ? chara->CharacterData.ModelCharaId_2 : chara->CharacterData.ModelCharaId;
+			//if (modelId != 0) return false;
 			
 			var drawObject = chara->GameObject.DrawObject;
-			if (drawObject == null || drawObject->Object.GetObjectType() != ObjectType.CharacterBase) return false;
+			if (drawObject == null || drawObject->Object.GetObjectType() != ObjectType.CharacterBase)
+				return false;
 
 			return ((CharacterBase*)drawObject)->GetModelType() == CharacterBase.ModelType.Human;
 		}
