@@ -3,7 +3,7 @@
 
 Palette+ provides a greater degree of character customizability by allowing the user to pick out colours for skin, hair, eyes, etc, from a colour wheel, which may then be set up to persist through loading screens.
 
-If you're having any issues or need support, feel free to join us on [Discord](https://discord.gg/ktisis)!
+This plugin has been deprecated and will not receive updates moving forward; its functionality has been adopted by [Glamourer](https://github.com/ottermandias/glamourer), which provides support for importing saved palettes into designs in order to ease the migration process for users.
 
 ## Installation
 
